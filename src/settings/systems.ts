@@ -782,7 +782,7 @@ export const SYSTEMS: (DithertronSettings | null)[] = [
         // 176x144 = 22x18 = 396 tiles, within the 448 the VDP can address.
         // For drawing a tile map: nothing is shared, so every tile can be edited.
         id: 'sms.tiles.unique',
-        name: 'Sega Master System (32 colors, 396 unique tiles)',
+        name: 'Sega Master System (32 colors, 396 tiles)',
         width: 176,
         height: 144,
         scaleX: 8 / 7,
