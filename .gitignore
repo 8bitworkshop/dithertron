@@ -8,3 +8,4 @@ lib/
 fonts/
 tmp/
 .tap/
+dist/

@@ -105,7 +105,6 @@ export function reducePalette(
 {
     if (colors.length == count) return new Uint32Array(colors);
     var choices = reducePaletteChoices(imageData, colors, count, diversity, distfn);
-    console.log('reducePalette', colors.length, 'to', choices.length);
     return new Uint32Array(choices.map((x) => colors[x.ind]));
 }
 

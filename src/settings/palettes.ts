@@ -315,7 +315,7 @@ export const MC6847_PALETTE1 = [
     RGB(0xd4, 0x7f, 0x00),    /* NTSC: RGB( 204,  45,  16), */  // orange  
 ];
 
-function generateRGBPalette(rr: number, gg: number, bb: number) {
+export function generateRGBPalette(rr: number, gg: number, bb: number) {
     var n = 1 << (rr + gg + bb);
     var rs = 255 / ((1 << rr) - 1);
     var gs = 255 / ((1 << gg) - 1);

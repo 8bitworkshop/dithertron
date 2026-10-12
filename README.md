@@ -108,6 +108,39 @@ npm run test-web    # Nightwatch headless browser tests
 * Custom width and height (crop rect for non-full-screen)
 * Faster closest color lookup
 
+## Using as a library
+
+```sh
+npm install dithertron
+```
+
+The package is dependency-free and has no DOM requirements, so it runs in Node and in browsers.
+Images are RGBA pixels (like canvas `ImageData`); they are stretched to the target size.
+
+```js
+import { dither, listSystems } from 'dithertron';
+
+// a built-in system, by id (see listSystems())
+const c64 = dither({ data, width, height }, 'c64.multi', { diffuse: 0.5 });
+c64.rgba;    // dithered image as RGBA bytes
+c64.indexed; // palette index per pixel
+c64.native;  // native binary for the system, when it has an exporter
+
+// your own system: any size and number of colors
+const mine = dither({ data, width, height }, { width: 128, height: 96, colors: 6 });
+
+// ...optionally choosing from a fixed palette (#rrggbb, [r,g,b], or packed r|g<<8|b<<16)
+const mono = dither({ data, width, height },
+  { width: 64, height: 64, colors: 3, palette: ['#000000', '#8844cc', '#ffffff'] });
+```
+
+Options: `iterations`, `diffuse`, `ordered`, `noise`, `ditherfn` (see `kernels`),
+`paletteDiversity`, `errfn`. Other exports include `createSystem`, `getSystem`,
+`exportNative`, `resizeImage`, `SYSTEMS`, `palettes`, `kernels` and the `Dithertron` class.
+`#rgb` shorthand is not supported; use six hex digits.
+
+Build the package with `npm run build-lib`; it writes ESM, CJS and type declarations to `dist/`.
+
 ## License
 
 Copyright © 2016-2026 [Steven Hugg](https://github.com/8bitworkshop).
