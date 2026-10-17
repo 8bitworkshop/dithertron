@@ -95,6 +95,19 @@
         #sourcePane {
             position: relative;
         }
+        #cropSize {
+            display: none;
+            position: absolute;
+            top: 0.2em;
+            right: 0.2em;
+            z-index: 1040;
+            background: rgba(0, 0, 0, 0.25);
+            color: #ccc;
+            padding: 0.15em 0.25em;
+            border-radius: 0.25em;
+            font-size: 0.65em;
+            pointer-events: none;
+        }
         #dropOverlay {
             display: none;
             position: absolute;
@@ -248,6 +261,7 @@
         <div class="responsive-row">
             <div class="col-md-6 responsive-col" id="sourcePane">
                 <img class="crop" id="srcimage">
+                <div id="cropSize"></div>
                 <div id="dropOverlay">Drop image here</div>
             </div>
             <div class="col-md-6 responsive-col">
@@ -317,6 +331,98 @@
                             <input type="range" id="noiseSlider" data-provide="slider" data-slider-min="0"
                                 data-slider-max="10" data-slider-value="5" />
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-secondary mt-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="textOverlayEnable">
+                        <label class="form-check-label" for="textOverlayEnable">Text overlay</label>
+                    </div>
+                    <div id="textOverlaySection" style="display:none">
+                        <div class="form-row align-items-center">
+                            <div class="col-auto">
+                                <textarea class="form-control form-control-sm" id="textOverlayInput"
+                                    rows="2" cols="18"
+                                    placeholder="Text to draw (Enter for new line)"></textarea>
+                            </div>
+                            <div class="col-auto">
+                                <select class="form-control form-control-sm" id="textOverlayFont"
+                                    title="Font family (Google Fonts load on demand)">
+                                    <optgroup label="Local">
+                                        <option value="Press Start 2P">Pixel (Press Start 2P)</option>
+                                    </optgroup>
+                                    <optgroup label="Skinny (Google)">
+                                        <option value="Silkscreen">Silkscreen</option>
+                                        <option value="VT323">VT323</option>
+                                        <option value="Pixelify Sans">Pixelify Sans</option>
+                                        <option value="Jersey 10">Jersey 10</option>
+                                        <option value="Micro 5">Micro 5</option>
+                                        <option value="Tiny5">Tiny5</option>
+                                        <option value="Doto">Doto</option>
+                                        <option value="Handjet">Handjet</option>
+                                    </optgroup>
+                                    <optgroup label="Mono (Google)">
+                                        <option value="Share Tech Mono">Share Tech Mono</option>
+                                        <option value="Nova Mono">Nova Mono</option>
+                                        <option value="Syne Mono">Syne Mono</option>
+                                        <option value="Major Mono Display">Major Mono Display</option>
+                                    </optgroup>
+                                    <optgroup label="System">
+                                        <option value="monospace">Mono</option>
+                                        <option value="sans-serif">Sans</option>
+                                        <option value="serif">Serif</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" class="form-control form-control-sm" id="textOverlaySize"
+                                    min="1" max="64" value="8" title="Font size (target pixels)"
+                                    style="width:5em" />
+                            </div>
+                            <div class="col-auto">
+                                <label class="mb-0 mr-1" for="textOverlayScaleX">Scale</label>
+                                <input type="number" class="form-control form-control-sm d-inline-block"
+                                    id="textOverlayScaleX" min="0.1" max="16" step="0.5" value="1"
+                                    title="Horizontal scale" style="width:4.5em" />
+                                <input type="number" class="form-control form-control-sm d-inline-block ml-1"
+                                    id="textOverlayScaleY" min="0.1" max="16" step="0.5" value="1"
+                                    title="Vertical scale" style="width:4.5em" />
+                                <input type="number" class="form-control form-control-sm d-inline-block ml-1"
+                                    id="textOverlayLineHeight" min="0.5" max="4" step="0.05" value="1.2"
+                                    title="Line height multiplier" style="width:4.5em" />
+                            </div>
+                        </div>
+                        <div class="form-row align-items-center mt-2">
+                            <div class="col-auto">
+                                <label class="mb-0" for="textOverlayX">X</label>
+                                <input type="number" class="form-control form-control-sm d-inline-block"
+                                    id="textOverlayX" value="4" style="width:5em" />
+                            </div>
+                            <div class="col-auto">
+                                <label class="mb-0" for="textOverlayY">Y</label>
+                                <input type="number" class="form-control form-control-sm d-inline-block"
+                                    id="textOverlayY" value="4" style="width:5em" />
+                            </div>
+                            <div class="col-auto">
+                                <label class="mb-0" for="textOverlayFg">Color</label>
+                                <input type="color" id="textOverlayFg" value="#ffffff" title="Text color" />
+                            </div>
+                            <div class="col-auto form-check ml-3">
+                                <input class="form-check-input" type="checkbox" id="textOverlayBox">
+                                <label class="form-check-label" for="textOverlayBox">Box</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="color" id="textOverlayBg" value="#000000" title="Box color" />
+                            </div>
+                        </div>
+                        <small class="text-muted">Drawn on the downscaled image; colors snap to the palette.
+                            Google Fonts load on demand —
+                            <a href="https://fonts.google.com/?category=Display,Monospace" target="_blank"
+                                rel="noopener">browse</a> them.</small>
                     </div>
                 </div>
             </div>
