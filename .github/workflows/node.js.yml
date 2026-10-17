@@ -29,7 +29,8 @@ jobs:
     - run: npm ci
     - run: npm run tsbuild
     - run: make setup
-    - run: npm run build build-lib
+    - run: npm run build
+    - run: npm run build-lib
     - run: make watch &
     - run: npm test
     - run: make distro
