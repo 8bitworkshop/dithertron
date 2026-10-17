@@ -13,6 +13,8 @@ setup:
 	@cp node_modules/cropperjs/dist/cropper.min.css ./lib/
 	@cp node_modules/bootstrap-slider/dist/css/bootstrap-slider.min.css ./lib/
 	@cp node_modules/font-awesome/fonts/* ./fonts/
+	@cp node_modules/@fontsource/press-start-2p/files/press-start-2p-latin-400-normal.woff2 ./fonts/
+	@cp node_modules/@fontsource/press-start-2p/LICENSE ./fonts/press-start-2p-LICENSE.txt
 
 setupwin:
 	@if not exist ".\lib" mkdir .\lib  > nul
@@ -25,6 +27,8 @@ setupwin:
 	@copy /y node_modules\cropperjs\dist\cropper.min.css .\lib > nul
 	@copy /y node_modules\bootstrap-slider\dist\css\bootstrap-slider.min.css .\lib > nul
 	@copy /y node_modules\font-awesome\fonts\*.* .\fonts > nul
+	@copy /y node_modules\@fontsource\press-start-2p\files\press-start-2p-latin-400-normal.woff2 .\fonts > nul
+	@copy /y node_modules\@fontsource\press-start-2p\LICENSE .\fonts\press-start-2p-LICENSE.txt > nul
 
 watch:
 	npm run clean

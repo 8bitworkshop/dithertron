@@ -53,6 +53,7 @@
     "prepublishOnly": "npm run clean && npm run build-lib && npm run test-unit"
   },
   "devDependencies": {
+    "@fontsource/press-start-2p": "^5.3.0",
     "@types/jquery": "^3.5.0",
     "@types/pica": "^9.0.4",
     "bootstrap": "^4.6.2",

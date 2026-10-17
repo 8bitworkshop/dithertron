@@ -10,6 +10,7 @@ import pica from 'pica';
 import { saveAs } from 'file-saver';
 import localforage from 'localforage';
 import { EXAMPLE_IMAGES } from "./sampleimages";
+import { TextOverlay } from "./textoverlay";
 
 var cropper : Cropper;
 
@@ -64,6 +65,9 @@ class ProxyDithertron {
 }
 
 export const dithertron = new ProxyDithertron();
+
+// Text overlay (created in startUI, once the DOM and settings exist).
+let textOverlay: TextOverlay | null = null;
 
 var filenameLoaded: string;
 var presetLoaded: string;
@@ -177,6 +181,8 @@ function reprocessImage() {
     let sat = (parseFloat(saturationSlider.value) - 50) / 50 + 1.0; // middle = 1.0, range = 0-2
     let gamma = 1;
     applyBrightness(resizeImageData, bright, bias, sat, gamma);
+    // overlay text at target resolution, snapped to the active palette
+    textOverlay?.apply(resizeImageData, resizeCanvas.width, resizeCanvas.height, dithertron.settings?.pal);
     dithertron.setSourceImage(resizeImageData);
     resetImage();
 }
@@ -625,6 +631,7 @@ function updateURL(replace: boolean = false) {
         const differs = el instanceof HTMLSelectElement ? el.value != dflt : parseFloat(el.value) != parseFloat(dflt);
         if (differs) qs[c.key] = el.value;
     }
+    textOverlay?.appendQueryParams(qs);
     const hash = '#' + $.param(qs);
     if (hash == window.location.hash) return;
     if (replace)
@@ -649,7 +656,8 @@ function applyURL(initial: boolean = false) {
         const systemChanged = initial || system.id != dithertron.settings.id;
         if (systemChanged)
             setTargetSystem(system);
-        const controlsChanged = applyURLControls(qs, system);
+        let controlsChanged = applyURLControls(qs, system);
+        if (textOverlay?.applyQueryParams(qs)) controlsChanged = true;
         if (imageChanged)
             loadSourceImage("images/" + image);
         else if (controlsChanged)
@@ -757,6 +765,7 @@ export function startUI() {
             */
         }
 
+        textOverlay = new TextOverlay(reprocessImage, updateURL);
         initURLControls();
         applyURL(true);
         // back/forward buttons only change the hash
