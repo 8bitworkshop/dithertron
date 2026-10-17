@@ -14,6 +14,8 @@ import asm_msx from "./asm/msx.asm";
 // @ts-ignore
 import asm_vcs from "./asm/vcs.asm";
 // @ts-ignore
+import asm_vcscolor from "./asm/vcscolor.asm";
+// @ts-ignore
 import asm_astrocade from "./asm/astrocade.asm";
 // @ts-ignore
 import asm_atari8_d from "./asm/atari8_d.asm";
@@ -76,6 +78,24 @@ export function getFileViewerCode_vcs(): string {
     var palinds = convertToSystemPalette(dithertron.lastPixels.pal, dithertron.settings.pal);
     code = code.replace('#$F6', '#$' + hex(palinds[0]));
     code = code.replace('#$F7', '#$' + hex(palinds[1]));
+    return code;
+}
+
+export function getFileViewerCode_vcs_color(): string {
+    // The per-scanline foreground/background colors are stored in the data
+    // file (see PFColorBg/PFColorFg in vcscolor.asm), so the code itself is
+    // just the template. Use the first scanline's colors for the default
+    // register values set before the display loop.
+    var code = asm_vcscolor;
+    var px = dithertron.lastPixels;
+    var params = px && px.content && px.content.params;
+    if (params && params.length > 0) {
+        var palinds = convertToSystemPalette(px.pal, dithertron.settings.pal);
+        var bg = params[0] & 0xff;
+        var fg = (params[0] >> 8) & 0xff;
+        code = code.replace('#$F6', '#$' + hex(palinds[bg] ?? bg));
+        code = code.replace('#$F7', '#$' + hex(palinds[fg] ?? fg));
+    }
     return code;
 }
 

@@ -2171,17 +2171,19 @@ export function exportNESTiles(message: PixelsAvailableMessage, settings: Dither
     return concatArrays([chr, nameTable, palette]);
 }
 
+const VCS_PF_MAP = [
+    3, 2, 1, 0, -1, -1, -1, -1,
+    4, 5, 6, 7, 8, 9, 10, 11,
+    19, 18, 17, 16, 15, 14, 13, 12,
+    23, 22, 21, 20, -1, -1, -1, -1,
+    24, 25, 26, 27, 28, 29, 30, 31,
+    39, 38, 37, 36, 35, 34, 33, 32,
+];
+
 export function exportVCSPlayfield(img: PixelsAvailableMessage, settings: DithertronSettings): Uint8Array {
     // must be == 40 pixels wide
     var char = new Uint8Array(6 * img.height);
-    const pfmap = [
-        3, 2, 1, 0, -1, -1, -1, -1,
-        4, 5, 6, 7, 8, 9, 10, 11,
-        19, 18, 17, 16, 15, 14, 13, 12,
-        23, 22, 21, 20, -1, -1, -1, -1,
-        24, 25, 26, 27, 28, 29, 30, 31,
-        39, 38, 37, 36, 35, 34, 33, 32,
-    ];
+    const pfmap = VCS_PF_MAP;
     for (var y = 0; y < img.height; y++) {
         for (var x = 0; x < 48; x++) {
             var srcofs = pfmap[x];
@@ -2189,6 +2191,45 @@ export function exportVCSPlayfield(img: PixelsAvailableMessage, settings: Dither
                 srcofs += y * img.width;
                 if (img.indexed[srcofs]) {
                     var destofs = (x >> 3) * img.height + img.height - y - 1;
+                    char[destofs] |= 128 >> (x & 7);
+                }
+            }
+        }
+    }
+    return char;
+}
+
+export function exportVCSColorPlayfield(img: PixelsAvailableMessage, settings: DithertronSettings): Uint8Array {
+    // must be == 40 pixels wide
+    // Data layout (each table is img.height bytes):
+    //   PFBitmap0..5, PFColorBg, PFColorFg
+    // See src/export/asm/vcscolor.asm. The color of a playfield pixel is
+    // COLUPF when its bit is set, otherwise COLUBK, so each scanline picks
+    // its two colors from the canvas params.
+    const content: ParamsContent = img.content;
+    if (!content || !content.params)
+        throw new Error('VCS color export needs per-scanline params');
+
+    const height = img.height;
+    const char = new Uint8Array(8 * height);
+    const palinds = convertToSystemPalette(img.pal, settings.pal);
+    const pfmap = VCS_PF_MAP;
+
+    for (var y = 0; y < height; y++) {
+        const param = content.params[y];
+        const bg = param & 0xff;
+        const fg = (param >> 8) & 0xff;
+        const destrow = height - y - 1;
+
+        char[6 * height + destrow] = palinds[bg] ?? bg;
+        char[7 * height + destrow] = palinds[fg] ?? fg;
+
+        for (var x = 0; x < 48; x++) {
+            var srcofs = pfmap[x];
+            if (srcofs >= 0) {
+                srcofs += y * img.width;
+                if (img.indexed[srcofs] == fg) {
+                    var destofs = (x >> 3) * height + destrow;
                     char[destofs] |= 128 >> (x & 7);
                 }
             }

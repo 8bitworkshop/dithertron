@@ -224,7 +224,7 @@ export const SYSTEMS: (DithertronSettings | null)[] = [
         scaleX: 6,
         conv: 'VCSColorPlayfield_Canvas',
         pal: palettes.VCS_RGB,
-        toNative: 'exportVCSPlayfield',
+        toNative: 'exportVCSColorPlayfield',
     },
     {
         id: 'astrocade',

@@ -64,12 +64,12 @@ ScanLoop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; BITMAP DATA
 
-PFBitmap0 equ .+192*0
-PFBitmap1 equ .+192*1
-PFBitmap2 equ .+192*2
-PFBitmap3 equ .+192*3
-PFBitmap4 equ .+192*4
-PFBitmap5 equ .+192*5
+PFBitmap0 equ .+192*0-1
+PFBitmap1 equ .+192*1-1
+PFBitmap2 equ .+192*2-1
+PFBitmap3 equ .+192*3-1
+PFBitmap4 equ .+192*4-1
+PFBitmap5 equ .+192*5-1
     incbin "$DATAFILE"
 
 ; Epilogue
