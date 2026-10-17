@@ -29,26 +29,25 @@ NextFrame
     ldy #192
 ScanLoop
 ; WSYNC and store playfield registers
-    sta WSYNC
     lda PFBitmap0,y
+    ldx PFBitmap1,y
+    sta WSYNC
     sta PF0		; store first playfield byte
-    lda PFBitmap1,y
-    sta PF1		; store 2nd byte
-    lda PFBitmap2,y
-    sta PF2		; store 3rd byte
-; Here's the asymmetric part -- by this time the TIA clock
-; is far enough that we can rewrite the same PF registers
-; and display new data on the right side of the screen
-    ldx PFColorFg,y
-    lda PFBitmap3,y
-    sta PF0		; store 4th byte
-    lda PFBitmap4,y
-    sta PF1		; store 5th byte
-    lda PFBitmap5,y
-    sta PF2		; store 6th byte
-    stx COLUPF
+    lda PFColorFg,y
+    sta COLUPF
     lda PFColorBg,y
     sta COLUBK
+    stx PF1		; store 2nd byte
+    lda PFBitmap2,y
+    sta PF2		; store 3rd byte
+    lda PFBitmap3,y
+    sta PF0		; store 4th byte (cyc 28-49)
+    nop
+    lda PFBitmap4,y
+    sta PF1		; store 5th byte (cyc 39-54)
+    nop
+    lda PFBitmap5,y
+    sta PF2		; store 6th byte (cyc 49-65)
     dey 
     bne ScanLoop	; repeat until all scanlines drawn
 ; Reset playfield
