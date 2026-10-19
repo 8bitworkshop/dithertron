@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@fontsource/press-start-2p": "^5.3.0",
-    "@types/jquery": "^3.5.0",
+    "@types/jquery": "^4.0.1",
     "bootstrap": "^4.6.2",
     "bootstrap-slider": "^11.0.2",
     "cropper": "^4.1.0",
@@ -73,7 +73,7 @@
     "file-saver": "^2.0.2",
     "font-awesome": "^4.7.0",
     "jpeg-js": "^0.4.4",
-    "jquery": "^3.5.0",
+    "jquery": "^4.0.0",
     "localforage": "^1.9.0",
     "nightwatch": "^3.12.3",
     "pica": "^10.0.3",
