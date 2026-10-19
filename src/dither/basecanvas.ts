@@ -1,5 +1,5 @@
 import { support } from "jquery";
-import { getChoices, getClosestRGB, getRGBADiff, getRGBAErrorPerceptual, reducePaletteChoices, ColorChoice } from "../common/color";
+import { getChoices, getClosestRGB, getRGBADiff, getRGBAErrorPerceptual, reducePaletteChoices, ColorChoice } from "../common/color.js";
 import {
     DitherKernel,
     DithertronSettings,
@@ -12,9 +12,9 @@ import {
     BlockBitOrder,
     BlockColorBleed,
     Param
-} from "../common/types";
-import { range, runtime_assert } from "../common/util";
-import { TileCodebook } from "./tilecodebook";
+} from "../common/types.js";
+import { range, runtime_assert } from "../common/util.js";
+import { TileCodebook } from "./tilecodebook.js";
 
 const THRESHOLD_MAP_4X4 = [
     0, 8, 2, 10,

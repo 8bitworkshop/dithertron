@@ -1,11 +1,18 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist/types",
+    // Publish only compiled output: no source/declaration maps that point at
+    // src/, and no comments carried over from the TypeScript sources.
+    "sourceMap": false,
+    "declarationMap": false,
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "sourceMap": false
+    "removeComments": true
   },
-  "include": ["src/index.ts"]
+  "exclude": [
+    // UI-only modules: not part of the headless library entry.
+    "src/ui",
+    "src/worker",
+    "src/export/fileviewers.ts",
+    "src/settings/systeminfo.ts"
+  ]
 }

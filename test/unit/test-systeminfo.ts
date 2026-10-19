@@ -1,6 +1,6 @@
 import t from 'tap';
-import { SYSTEMS } from '../../src/settings/systems';
-import { getSystemInfo } from '../../src/settings/systeminfo';
+import { SYSTEMS } from '../../src/settings/systems.js';
+import { getSystemInfo } from '../../src/settings/systeminfo.js';
 
 const info = (id: string) => getSystemInfo(SYSTEMS.find((s) => s?.id === id)!);
 

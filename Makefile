@@ -34,10 +34,10 @@ watch:
 	npm run clean
 	sleep 9999999 | npm run esbuild-worker -- --watch &
 	sleep 9999999 | npm run esbuild-ui -- --watch &
-	node scripts/server.js
+	node scripts/server.cjs
 
 TMP=./tmp/dist
 
 distro: build
 	rm -fr $(TMP) && mkdir -p $(TMP)
-	cp -rp index.html gen images lib fonts $(TMP)
+	cp -rp index.html dist images lib fonts $(TMP)

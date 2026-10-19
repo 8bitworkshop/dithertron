@@ -1,4 +1,4 @@
-import { DithertronSettings } from "../common/types";
+import { DithertronSettings } from "../common/types.js";
 
 // One line describing a system's output: size, colors, and tile limits.
 export function getSystemInfo(sys: DithertronSettings): string {

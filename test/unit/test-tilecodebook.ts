@@ -1,5 +1,5 @@
 import t from 'tap';
-import { TileCodebook, TILE_FLIP_X, TILE_FLIP_Y } from '../../src/dither/tilecodebook';
+import { TileCodebook, TILE_FLIP_X, TILE_FLIP_Y } from '../../src/dither/tilecodebook.js';
 
 const W = 4, H = 4, P = W * H, S = 4;
 

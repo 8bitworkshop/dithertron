@@ -3,7 +3,31 @@
 All notable changes to Dithertron are documented here. Versions follow the
 `package.json` version history.
 
-## 1.3.0
+## [Unreleased]
+
+### Changed
+
+- The npm package is published under the `@8bws` scope as
+  `@8bws/dithertron`, with `publishConfig.access` set to `public`, Node 18
+  as the minimum, and only `gen/`, `README.md`, and `LICENSE` in the tarball.
+  The library build is now ESM-only (no CJS bundle) and is emitted into
+  `gen/` with TypeScript declarations; the browser app's esbuild bundles moved
+  from `gen/` to `dist/` so the two builds no longer share a directory.
+- Relative imports in the TypeScript sources now use explicit `.js`
+  specifiers, so the published `gen/` output runs directly in Node ESM without
+  a bundler.
+- `npm run build:lib` replaces `build-lib`; `prepack` builds the library
+  before packing, and `prepublishOnly` runs typecheck plus unit tests.
+- Added `npm run release -- <patch|minor|major|x.y.z>`
+  (`scripts/release.mjs`), which refuses a dirty tree, runs typecheck and
+  tests, moves the changelog's `[Unreleased]` entries under
+  `## [x.y.z] - date`, bumps `package.json`/`package-lock.json`, and commits
+  and tags `vx.y.z`. The pure version/changelog helpers live in
+  `scripts/release-lib.mjs` and are unit tested.
+- Tap is limited to `test/unit/*.ts`; Nightwatch's CommonJS test files and
+  config are kept out of ESM resolution.
+
+## [1.3.0] - 2026-10-12
 
 - Preserve settings in the URL hash and restore them on back/forward navigation; slider values included.
 - Generalized Game Boy Color palette handling into `SubPalette_Canvas`; NES attributes via sub-palettes.

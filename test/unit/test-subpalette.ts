@@ -1,9 +1,9 @@
 import t from 'tap';
-import { loadDither } from '../test-utils';
-import { Dithertron } from '../../src/dither/dithertron';
-import * as exportfuncs from '../../src/export/exportfuncs';
-import { PixelsAvailableMessage } from '../../src/common/types';
-import * as kernels from '../../src/dither/kernels';
+import { loadDither } from '../test-utils.js';
+import { Dithertron } from '../../src/dither/dithertron.js';
+import * as exportfuncs from '../../src/export/exportfuncs.js';
+import { PixelsAvailableMessage } from '../../src/common/types.js';
+import * as kernels from '../../src/dither/kernels.js';
 
 async function converge(sysid: string, options: object = {}): Promise<{ dt: Dithertron, last: PixelsAvailableMessage, iters: number }> {
     const dt = await loadDither(sysid, 'parrot.jpg');

@@ -1,6 +1,6 @@
 import t from 'tap';
-import { SYSTEMS } from '../../src/settings/systems';
-import { DithertronSettings } from '../../src/common/types';
+import { SYSTEMS } from '../../src/settings/systems.js';
+import { DithertronSettings } from '../../src/common/types.js';
 
 // Presets that are known to be inconsistent and are being fixed.
 const KNOWN_ISSUES: { [id: string]: string } = {};

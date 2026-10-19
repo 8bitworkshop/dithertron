@@ -1,16 +1,16 @@
-import { SYSTEMS, SYSTEM_LOOKUP } from "../settings/systems";
-import { getSystemInfo } from "../settings/systeminfo";import { DitherSetting, DithertronSettings, PixelsAvailableMessage } from "../common/types";
+import { SYSTEMS, SYSTEM_LOOKUP } from "../settings/systems.js";
+import { getSystemInfo } from "../settings/systeminfo.js";import { DitherSetting, DithertronSettings, PixelsAvailableMessage } from "../common/types.js";
 
-import * as exportfuncs from "../export/exportfuncs";
-import * as fileviewers from "../export/fileviewers";
-import * as kernels from "../dither/kernels";
+import * as exportfuncs from "../export/exportfuncs.js";
+import * as fileviewers from "../export/fileviewers.js";
+import * as kernels from "../dither/kernels.js";
 
 import Cropper from 'cropperjs';
 import pica from 'pica';
 import { saveAs } from 'file-saver';
 import localforage from 'localforage';
-import { EXAMPLE_IMAGES } from "./sampleimages";
-import { TextOverlay } from "./textoverlay";
+import { EXAMPLE_IMAGES } from "./sampleimages.js";
+import { TextOverlay } from "./textoverlay.js";
 
 var cropper : Cropper;
 
@@ -39,7 +39,7 @@ class ProxyDithertron {
         // disable old worker
         if (this.worker) this.worker.onmessage = () => {};
         // create a new worker
-        this.worker = new Worker("./gen/worker.js");
+        this.worker = new Worker("./dist/worker.js");
         this.worker.onmessage = (ev) => {
             var data = ev.data;
             if (data != null) {
@@ -209,7 +209,7 @@ function convertImage() {
     let cropCanvas = cropper?.getCroppedCanvas();
     // avoid "Failed to execute 'createImageBitmap' on 'Window': The crop rect height is 0."
     if (!cropCanvas?.width || !cropCanvas?.height) return;
-    pica().resize(cropCanvas, resizeCanvas, {
+    (pica as any)().resize(cropCanvas, resizeCanvas, {
         /*
         unsharpAmount: 50,
         unsharpRadius: 0.5,

@@ -1,5 +1,5 @@
 {
-  "name": "dithertron",
+  "name": "@8bws/dithertron",
   "version": "1.3.1",
   "description": "Convert images to retro computer graphics formats: palette reduction and dithering with per-system hardware constraints",
   "keywords": [
@@ -14,48 +14,57 @@
     "8-bit"
   ],
   "license": "GPL-3.0",
+  "author": "Steven Hugg",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/8bitworkshop/dithertron.git"
   },
   "homepage": "https://8bitworkshop.com/dithertron/",
-  "type": "commonjs",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/types/index.d.ts",
+  "type": "module",
+  "main": "./gen/index.js",
+  "types": "./gen/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "types": "./gen/index.d.ts",
+      "import": "./gen/index.js"
     },
     "./package.json": "./package.json"
   },
   "files": [
-    "dist",
+    "gen",
     "README.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "tsbuild": "tsc",
-    "build": "npm run esbuild-worker && npm run esbuild-ui",
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && npm run esbuild-worker && npm run esbuild-ui",
     "clean": "rm -fr ./gen ./dist",
-    "esbuild-worker": "esbuild src/worker/worker.ts --bundle --sourcemap --target=es2017 --outfile=./gen/worker.js",
-    "esbuild-ui": "esbuild src/ui/ui.ts --loader:.asm=text --format=esm --bundle --minify --sourcemap --target=es2017 --outfile=./gen/ui.js --external:path --external:fs",
+    "esbuild-worker": "esbuild src/worker/worker.ts --bundle --sourcemap --target=es2017 --outfile=./dist/worker.js",
+    "esbuild-ui": "esbuild src/ui/ui.ts --loader:.asm=text --format=esm --bundle --minify --sourcemap --target=es2017 --outfile=./dist/ui.js --external:path --external:fs",
+    "build:lib": "node -e \"require('fs').rmSync('gen',{recursive:true,force:true})\" && tsc -p tsconfig.lib.json --emitDeclarationOnly --removeComments false && tsc -p tsconfig.lib.json --declaration false --removeComments true",
+    "prepack": "npm run build:lib",
+    "prepublishOnly": "npm run typecheck && npm run test-unit",
+    "typecheck": "tsc --noEmit",
     "test-unit": "tap --disable-coverage --comments --timeout=180 run",
     "test-unit-cov": "tap --allow-incomplete-coverage --comments --timeout=180 run",
-    "test-web": "npx nightwatch --test test/nightwatch/**.js --headless",
+    "test-web": "npx nightwatch --config nightwatch.conf.cjs --test test/nightwatch/**.js --headless",
     "test": "npm run test-unit && npm run test-web",
-    "build-lib": "npm run build-lib-js && npm run build-lib-types",
-    "build-lib-js": "esbuild src/index.ts --bundle --sourcemap --target=es2017 --format=esm --outfile=dist/index.mjs && esbuild src/index.ts --bundle --sourcemap --target=es2017 --format=cjs --outfile=dist/index.cjs",
-    "build-lib-types": "tsc -p tsconfig.lib.json",
-    "prepublishOnly": "npm run clean && npm run build-lib && npm run test-unit"
+    "release": "node scripts/release.mjs"
+  },
+  "tap": {
+    "files": [
+      "test/unit/*.ts"
+    ]
   },
   "devDependencies": {
     "@fontsource/press-start-2p": "^5.3.0",
     "@types/jquery": "^3.5.0",
-    "@types/pica": "^9.0.4",
     "bootstrap": "^4.6.2",
     "bootstrap-slider": "^11.0.2",
     "cropper": "^4.1.0",

@@ -68,7 +68,7 @@ Install dependencies and build:
 ```sh
 npm install
 make setup          # copies front-end deps into lib/ and fonts/ (use "make setupwin" on Windows)
-npm run build       # builds gen/worker.js and gen/ui.js with esbuild
+npm run build       # builds dist/worker.js and dist/ui.js with esbuild
 ```
 
 Start a development server with auto-rebuild:
@@ -83,11 +83,12 @@ Then open <http://localhost:8189>.
 
 | Command | Description |
 |---------|-------------|
-| `npm run build` | Build both worker and UI bundles |
+| `npm run build` | Build both worker and UI bundles into `./dist` |
 | `npm run esbuild-worker` | Build just the web-worker bundle |
 | `npm run esbuild-ui` | Build just the UI bundle |
-| `npm run tsbuild` | Type-check/compile TypeScript into `./gen` |
-| `npm run clean` | Remove the generated `./gen` directory |
+| `npm run build:lib` | Build the npm library (ESM + declarations) into `./gen` |
+| `npm run typecheck` | Type-check the TypeScript sources |
+| `npm run clean` | Remove the generated `./gen` and `./dist` directories |
 | `make distro` | Assemble a deployable copy in `./tmp/dist` |
 
 ### Testing
@@ -97,6 +98,20 @@ npm run test        # unit tests + browser tests
 npm run test-unit   # tap-based unit tests
 npm run test-web    # Nightwatch headless browser tests
 ```
+
+### Releasing
+
+```sh
+npm run release -- patch   # bump version, changelog, commit, tag
+npm publish
+```
+
+`scripts/release.mjs` refuses a dirty tree, runs typecheck and tests, moves the
+changelog's `[Unreleased]` entries under `## [x.y.z] - date`, bumps
+`package.json`/`package-lock.json`, then commits and tags `vx.y.z`. Add
+`--push` to push with `git push --follow-tags`, `--dry-run` to preview, or
+`--no-tests` to skip the suite. `npm pack`/`npm publish` build the library
+first via `prepack`.
 
 ## TODO
 
@@ -111,14 +126,16 @@ npm run test-web    # Nightwatch headless browser tests
 ## Using as a library
 
 ```sh
-npm install dithertron
+npm install @8bws/dithertron
 ```
 
-The package is dependency-free and has no DOM requirements, so it runs in Node and in browsers.
-Images are RGBA pixels (like canvas `ImageData`); they are stretched to the target size.
+The package is ESM, includes TypeScript declarations, requires Node 18 or newer,
+and has no runtime dependencies. It has no DOM requirements, so it runs in Node
+and in browsers. Images are RGBA pixels (like canvas `ImageData`); they are
+stretched to the target size.
 
 ```js
-import { dither, listSystems } from 'dithertron';
+import { dither, listSystems } from '@8bws/dithertron';
 
 // a built-in system, by id (see listSystems())
 const c64 = dither({ data, width, height }, 'c64.multi', { diffuse: 0.5 });
@@ -139,7 +156,8 @@ Options: `iterations`, `diffuse`, `ordered`, `noise`, `ditherfn` (see `kernels`)
 `exportNative`, `resizeImage`, `SYSTEMS`, `palettes`, `kernels` and the `Dithertron` class.
 `#rgb` shorthand is not supported; use six hex digits.
 
-Build the package with `npm run build-lib`; it writes ESM, CJS and type declarations to `dist/`.
+Build the package with `npm run build:lib`; it writes ESM and type declarations to `gen/`.
+`npm pack` and `npm publish` run that build automatically.
 
 ## License
 

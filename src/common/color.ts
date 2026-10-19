@@ -1,5 +1,5 @@
-import { RGBDistanceFunction } from "./types";
-import { range, sqr } from "./util";
+import { RGBDistanceFunction } from "./types.js";
+import { range, sqr } from "./util.js";
 
 export interface ColorChoice {
     ind: number;

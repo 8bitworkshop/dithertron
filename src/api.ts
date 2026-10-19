@@ -1,8 +1,8 @@
-import { DithertronSettings, DitherKernel, PixelsAvailableMessage } from "./common/types";
-import { Dithertron, MAX_ITERATE_COUNT } from "./dither/dithertron";
-import { SYSTEMS, SYSTEM_LOOKUP } from "./settings/systems";
-import { generateRGBPalette } from "./settings/palettes";
-import * as exportfuncs from "./export/exportfuncs";
+import { DithertronSettings, DitherKernel, PixelsAvailableMessage } from "./common/types.js";
+import { Dithertron, MAX_ITERATE_COUNT } from "./dither/dithertron.js";
+import { SYSTEMS, SYSTEM_LOOKUP } from "./settings/systems.js";
+import { generateRGBPalette } from "./settings/palettes.js";
+import * as exportfuncs from "./export/exportfuncs.js";
 
 /** A palette entry: packed `r | g<<8 | b<<16`, `#rrggbb`, or `[r, g, b]`. */
 export type ColorInput = number | string | [number, number, number];

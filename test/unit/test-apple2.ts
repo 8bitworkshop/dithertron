@@ -1,5 +1,5 @@
 import { t } from "tap";
-import { doTest } from "../test-utils";
+import { doTest } from "../test-utils.js";
 
 doTest('apple2.hires', 'myersflat.jpg', { maxiters: 10, quality: 100, diffuse: 0.5 });
 doTest('apple2.lores', 'myersflat.jpg', { maxiters: 5, quality: 100, diffuse: 0.5 });

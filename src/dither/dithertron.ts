@@ -1,8 +1,8 @@
 
-import { ERROR_FUNCTIONS, getRGBAErrorPerceptual, reducePalette } from '../common/color';
-import { DithertronSettings, PixelsAvailableMessage } from '../common/types';
-import { SYSTEMS } from '../settings/systems';
-import * as canvas from './canvas';
+import { ERROR_FUNCTIONS, getRGBAErrorPerceptual, reducePalette } from '../common/color.js';
+import { DithertronSettings, PixelsAvailableMessage } from '../common/types.js';
+import { SYSTEMS } from '../settings/systems.js';
+import * as canvas from './canvas.js';
 
 /*
 const emglobal : any = this['window'] || (this as any)['global'] || this;

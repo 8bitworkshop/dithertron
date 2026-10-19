@@ -1,5 +1,5 @@
-import { Dithertron } from "../dither/dithertron";
-import { PixelsAvailableMessage } from "../common/types";
+import { Dithertron } from "../dither/dithertron.js";
+import { PixelsAvailableMessage } from "../common/types.js";
 
 //declare function postMessage(msg:any):void;
 

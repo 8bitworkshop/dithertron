@@ -1,8 +1,8 @@
 import t, { Test } from 'tap';
-import { loadDither } from '../test-utils';
-import { Dithertron } from '../../src/dither/dithertron';
-import * as exportfuncs from '../../src/export/exportfuncs';
-import { PixelsAvailableMessage } from '../../src/common/types';
+import { loadDither } from '../test-utils.js';
+import { Dithertron } from '../../src/dither/dithertron.js';
+import * as exportfuncs from '../../src/export/exportfuncs.js';
+import { PixelsAvailableMessage } from '../../src/common/types.js';
 
 // Ordered dithering repeats the same patterns, so tiles can be shared; error
 // diffusion makes nearly every tile unique.

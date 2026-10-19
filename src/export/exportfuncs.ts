@@ -1,11 +1,11 @@
-import { DithertronSettings, PixelEditorImageFormat, PixelsAvailableMessage } from "../common/types";
-import { ParamsContent, BlockParamDitherCanvasContent, extractColorsFromParams, extractColorsFromParamContent, extractColorsFromParamsContent, extractColorsFromParam } from "../dither/basecanvas";
+import { DithertronSettings, PixelEditorImageFormat, PixelsAvailableMessage } from "../common/types.js";
+import { ParamsContent, BlockParamDitherCanvasContent, extractColorsFromParams, extractColorsFromParamContent, extractColorsFromParamsContent, extractColorsFromParam } from "../dither/basecanvas.js";
 
-import { runtime_assert } from "../common/util";
-import { TILE_FLIP_X, TILE_FLIP_Y } from "../dither/tilecodebook";
-import { convertToSystemPalette } from "../common/color";
+import { runtime_assert } from "../common/util.js";
+import { TILE_FLIP_X, TILE_FLIP_Y } from "../dither/tilecodebook.js";
+import { convertToSystemPalette } from "../common/color.js";
 
-import { hex } from "../common/util";
+import { hex } from "../common/util.js";
 
 function remapBits(x: number, arr?: number[]): number {
     if (!arr) return x;

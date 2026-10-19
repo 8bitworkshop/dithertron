@@ -1,5 +1,5 @@
-import { getChoices, reducePaletteChoices, intensity, ColorChoice } from "../common/color";
-import { PaletteChoices, PaletteRange  } from "../common/types";
+import { getChoices, reducePaletteChoices, intensity, ColorChoice } from "../common/color.js";
+import { PaletteChoices, PaletteRange  } from "../common/types.js";
 import {
     BaseDitheringCanvas,
     BasicParamDitherCanvas,
@@ -8,9 +8,9 @@ import {
     CommonBlockParamDitherCanvas,
     AddToHistogramFromCurrentColorAtHandler,
     ScoredColorChoice,
-} from "./basecanvas";
-import { MAX_ITERATE_COUNT } from "./dithertron";
-import { range, runtime_assert } from "../common/util";
+} from "./basecanvas.js";
+import { MAX_ITERATE_COUNT } from "./dithertron.js";
+import { range, runtime_assert } from "../common/util.js";
 
 export class DitheringCanvas extends BaseDitheringCanvas {
     // just a wrapper for the base class so we can find it

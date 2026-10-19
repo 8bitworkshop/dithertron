@@ -1,7 +1,7 @@
 import t from 'tap';
-import { loadDither } from './test-utils';
-import { SYSTEMS } from '../src/settings/systems';
-import { DithertronSettings } from '../src/common/types';
+import { loadDither } from './test-utils.js';
+import { SYSTEMS } from '../src/settings/systems.js';
+import { DithertronSettings } from '../src/common/types.js';
 
 // Shared table-driven smoke test: dither the same image with every registered
 // system and verify structural invariants (dimensions, buffer size, palette

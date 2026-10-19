@@ -1,5 +1,5 @@
 import { t } from "tap";
-import { dither, createSystem, exportNative, listSystems, resizeImage, palettes, kernels } from "../../src/index";
+import { dither, createSystem, exportNative, listSystems, resizeImage, palettes, kernels } from "../../src/index.js";
 
 // horizontal red->blue gradient, RGBA bytes
 function gradient(w: number, h: number) {

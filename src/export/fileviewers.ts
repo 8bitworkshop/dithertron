@@ -30,9 +30,9 @@ import asm_sms from "./asm/sms.asm";
 // @ts-ignore
 import asm_gb from "./asm/gb.asm";
 
-import { dithertron } from "../ui/ui";
-import { hex } from "../common/util";
-import { convertToSystemPalette } from "../common/color";
+import { dithertron } from "../ui/ui.js";
+import { hex } from "../common/util.js";
+import { convertToSystemPalette } from "../common/color.js";
 
 ///
 

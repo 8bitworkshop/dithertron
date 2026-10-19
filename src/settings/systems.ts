@@ -1,5 +1,5 @@
-import { DithertronSettings } from "../common/types";
-import * as palettes from "./palettes";
+import { DithertronSettings } from "../common/types.js";
+import * as palettes from "./palettes.js";
 
 export const SYSTEMS: (DithertronSettings | null)[] = [
     {

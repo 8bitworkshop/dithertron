@@ -1,5 +1,5 @@
 import { t } from "tap";
-import { doTest } from "../test-utils";
+import { doTest } from "../test-utils.js";
 
 doTest('c64.multi', 'seurat.jpg', { maxiters: 10, quality: 120 });
 doTest('c64.multi', 'seurat.jpg', { maxiters: 30, quality: 75, diffuse: 0.5 });

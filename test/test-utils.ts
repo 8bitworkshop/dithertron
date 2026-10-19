@@ -5,11 +5,11 @@ import fs from 'fs';
 import jpeg from 'jpeg-js';
 import pica from 'pica';
 
-import { Dithertron } from '../src/dither/dithertron';
-import { SYSTEM_LOOKUP } from '../src/settings/systems';
-import { DithertronSettings } from '../src/common/types';
-import { getRGBAErrorPerceptual } from '../src/common/color';
-import * as kernels from "../src/dither/kernels";
+import { Dithertron } from '../src/dither/dithertron.js';
+import { SYSTEM_LOOKUP } from '../src/settings/systems.js';
+import { DithertronSettings } from '../src/common/types.js';
+import { getRGBAErrorPerceptual } from '../src/common/color.js';
+import * as kernels from "../src/dither/kernels.js";
 
 const THUMB_WIDTH = 20;
 const THUMB_HEIGHT = 12;

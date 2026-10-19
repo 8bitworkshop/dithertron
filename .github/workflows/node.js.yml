@@ -27,12 +27,12 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run tsbuild
+    - run: npm run typecheck
     - run: make setup
     - run: npm run build
-    - run: npm run build-lib
     - run: make watch &
     - run: npm test
+    - run: npm run build:lib
     - run: make distro
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
