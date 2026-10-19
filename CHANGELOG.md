@@ -5,6 +5,8 @@ All notable changes to Dithertron are documented here. Versions follow the
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-10-19
+
 ### Changed
 
 - The npm package is published under the `@8bws` scope as
