@@ -199,6 +199,24 @@
     "dist": getRGBAErrorAbsolute,
     "max": getRGBAErrorMax
   };
+  function getRGBChroma(rgb) {
+    const r = rgb & 255;
+    const g = rgb >> 8 & 255;
+    const b = rgb >> 16 & 255;
+    return Math.max(r, g, b) - Math.min(r, g, b);
+  }
+  var GRAY_CHROMA_THRESHOLD = 48;
+  function makeGrayBiasErrorFunction(errfn, grayBias) {
+    if (!(grayBias > 0)) return errfn;
+    return (a, b) => {
+      const base = errfn(a, b);
+      const sourceChroma = getRGBChroma(a);
+      if (sourceChroma >= GRAY_CHROMA_THRESHOLD) return base;
+      const grayness = 1 - sourceChroma / GRAY_CHROMA_THRESHOLD;
+      const paletteColorfulness = getRGBChroma(b) / 255;
+      return base * (1 + grayBias * grayness * paletteColorfulness);
+    };
+  }
   function getClosestRGB(rgb, inds, pal, distfn) {
     var best = 9999999;
     var bestidx = -1;
@@ -4433,7 +4451,8 @@
         if (!sys) throw new Error("no sysparams");
         if (!this.sourceImageData) throw new Error("no sourceImageData");
         var pal = new Uint32Array(sys.pal);
-        var errfn = ERROR_FUNCTIONS[sys.errfn || "perceptual"] || getRGBAErrorPerceptual;
+        var baseErrfn = ERROR_FUNCTIONS[sys.errfn || "perceptual"] || getRGBAErrorPerceptual;
+        var errfn = makeGrayBiasErrorFunction(baseErrfn, sys.grayBias || 0);
         if (sys.reduce) {
           pal = reducePalette(
             this.sourceImageData,
