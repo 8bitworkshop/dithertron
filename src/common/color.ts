@@ -190,6 +190,37 @@ export const ERROR_FUNCTIONS = {
     'max': getRGBAErrorMax,
 }
 
+// Chroma (colorfulness) of a packed RGB value: 0 for a gray, 255 for the most
+// saturated color possible.
+export function getRGBChroma(rgb: number) {
+    const r = rgb & 0xff;
+    const g = (rgb >> 8) & 0xff;
+    const b = (rgb >> 16) & 0xff;
+    return Math.max(r, g, b) - Math.min(r, g, b);
+}
+
+// Source colors with less chroma than this are considered grayscale. Tinting
+// from JPEG compression and resizing stays below it.
+const GRAY_CHROMA_THRESHOLD = 48;
+
+// Wraps an error function so that when the source pixel is (nearly) gray, a
+// colorful palette entry is penalized relative to a gray one. Without this a
+// palette with few grays (e.g. the TMS9918A) may pick midtone colors for a
+// black-and-white image because they are, by raw perceptual distance, slightly
+// closer than the available light gray. `grayBias` scales the penalty; colored
+// source pixels are unaffected, so photos keep their colors.
+export function makeGrayBiasErrorFunction(errfn: RGBDistanceFunction, grayBias: number): RGBDistanceFunction {
+    if (!(grayBias > 0)) return errfn;
+    return (a: number, b: number) => {
+        const base = errfn(a, b);
+        const sourceChroma = getRGBChroma(a);
+        if (sourceChroma >= GRAY_CHROMA_THRESHOLD) return base;
+        const grayness = 1 - sourceChroma / GRAY_CHROMA_THRESHOLD;
+        const paletteColorfulness = getRGBChroma(b) / 255;
+        return base * (1 + grayBias * grayness * paletteColorfulness);
+    };
+}
+
 export function getRGBAErrorArr(a: number, b: number) {
     var err = [0,0,0];
     for (var i=0; i<3; i++) {

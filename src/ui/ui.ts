@@ -17,6 +17,7 @@ var cropper : Cropper;
 var brightSlider = document.getElementById('brightSlider') as HTMLInputElement;
 var contrastSlider = document.getElementById('contrastSlider') as HTMLInputElement;
 var saturationSlider = document.getElementById('saturationSlider') as HTMLInputElement;
+var graySlider = document.getElementById('graySlider') as HTMLInputElement;
 var noiseSlider = document.getElementById('noiseSlider') as HTMLInputElement;
 var diffuseSlider = document.getElementById('diffuseSlider') as HTMLInputElement;
 var orderedSlider = document.getElementById('orderedSlider') as HTMLInputElement;
@@ -201,6 +202,7 @@ function resetImage() {
     dithertron.settings.ordered = parseFloat(orderedSlider.value) / 100;
     dithertron.settings.noise = parseFloat(noiseSlider.value);
     dithertron.settings.paletteDiversity = parseFloat(diversitySlider.value) / 200 + 0.75;
+    dithertron.settings.grayBias = parseFloat(graySlider.value) / 100 * 3;
     dithertron.setSettings(dithertron.settings);
     dithertron.restart();
 }
@@ -576,6 +578,7 @@ const URL_CONTROLS: { key: string, id: string, tileDefault?: string }[] = [
     { key: 'bright', id: 'brightSlider' },
     { key: 'contrast', id: 'contrastSlider' },
     { key: 'saturation', id: 'saturationSlider' },
+    { key: 'gray', id: 'graySlider' },
     { key: 'dither', id: 'diffuseTypeSelect' },
     { key: 'errfn', id: 'errorFuncSelect' },
 ];
@@ -778,6 +781,7 @@ export function startUI() {
         $("#brightSlider").on('change', reprocessImage);
         $("#contrastSlider").on('change', reprocessImage);
         $("#saturationSlider").on('change', reprocessImage);
+        $("#graySlider").on('change', resetImage);
         $("#resetButton").on('click', resetImage);
         $("#diffuseTypeSelect").on('change', resetImage);
         $("#targetFormatSelect").change((e) => {

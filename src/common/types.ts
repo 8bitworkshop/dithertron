@@ -88,6 +88,10 @@ export interface DithertronSettings {
     ordered?: number;
     noise?: number;
     paletteDiversity?: number;
+    // How much gray areas prefer gray palette entries. 0 (default) is off;
+    // around 2-3 makes a black-and-white image dither with grays instead of
+    // picking colorful midtones. Colored source pixels are not affected.
+    grayBias?: number;
     ditherfn?: DitherKernel;
     block?: BlockBasics & BlockColors & Partial<BlockColorBleed> & Partial<BlockBitOrder>;
     cell?: BlockBasics & BlockBitOrder & Partial<BlockColorBleed> & Partial<BlockBitOrder>;

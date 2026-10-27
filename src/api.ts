@@ -44,6 +44,13 @@ export interface DitherOptions {
     ditherfn?: DitherKernel;
     /** How different the chosen palette colors should be. */
     paletteDiversity?: number;
+    /**
+     * How strongly gray areas prefer gray palette entries. 0 (default) is off.
+     * Raise it for a black-and-white image on a palette with few grays (e.g.
+     * MSX/Coleco) to dither with grays instead of colored midtones. Colored
+     * parts of the image are unaffected.
+     */
+    grayBias?: number;
     /** 'perceptual' (default), 'hue', 'dist' or 'max'. */
     errfn?: string;
 }
@@ -198,7 +205,7 @@ export function dither(
         settings = createSystem(system);
     }
     settings = Object.assign({}, settings);
-    for (const k of ['diffuse', 'ordered', 'noise', 'ditherfn', 'paletteDiversity', 'errfn'] as const) {
+    for (const k of ['diffuse', 'ordered', 'noise', 'ditherfn', 'paletteDiversity', 'errfn', 'grayBias'] as const) {
         if (options[k] != null) (settings as any)[k] = options[k];
     }
     const { width, height } = settings;

@@ -1,5 +1,5 @@
 
-import { ERROR_FUNCTIONS, getRGBAErrorPerceptual, reducePalette } from '../common/color.js';
+import { ERROR_FUNCTIONS, getRGBAErrorPerceptual, makeGrayBiasErrorFunction, reducePalette } from '../common/color.js';
 import { DithertronSettings, PixelsAvailableMessage } from '../common/types.js';
 import { SYSTEMS } from '../settings/systems.js';
 import * as canvas from './canvas.js';
@@ -40,7 +40,8 @@ export class Dithertron implements DithertronInterface {
             if (!sys) throw new Error("no sysparams");
             if (!this.sourceImageData) throw new Error("no sourceImageData");
             var pal: Uint32Array = new Uint32Array(sys.pal);
-            var errfn = (ERROR_FUNCTIONS as any)[sys.errfn || 'perceptual'] || getRGBAErrorPerceptual;
+            var baseErrfn = (ERROR_FUNCTIONS as any)[sys.errfn || 'perceptual'] || getRGBAErrorPerceptual;
+            var errfn = makeGrayBiasErrorFunction(baseErrfn, sys.grayBias || 0);
             if (sys.reduce) {
                 pal = reducePalette(this.sourceImageData, pal,
                     sys.reduce, sys.paletteDiversity || 0, errfn);

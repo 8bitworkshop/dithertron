@@ -5,6 +5,14 @@ All notable changes to Dithertron are documented here. Versions follow the
 
 ## [Unreleased]
 
+### Added
+
+- A **Gray** slider (and the `grayBias` setting / `dither()` option) that
+  makes gray parts of an image prefer gray palette entries. This keeps a
+  black-and-white image from picking colorful midtones on palettes with few
+  grays, such as MSX/Coleco (TMS9918A). Colored source pixels are unaffected;
+  the default of 0 leaves the previous behavior unchanged.
+
 ## [1.3.1] - 2026-10-19
 
 ### Changed
