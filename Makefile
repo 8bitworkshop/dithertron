@@ -41,3 +41,4 @@ TMP=./tmp/dist
 distro: build
 	rm -fr $(TMP) && mkdir -p $(TMP)
 	cp -rp index.html dist images lib fonts $(TMP)
+	node scripts/gen-sitemap.mjs $(TMP)/sitemap.xml

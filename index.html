@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <script src="lib/jquery.min.js"></script>
-    <script src="lib/bootstrap.bundle.min.js"></script>
-    <script src="lib/bootstrap-slider.min.js"></script>
+    <script src="lib/jquery.min.js" defer></script>
+    <script src="lib/bootstrap.bundle.min.js" defer></script>
+    <script src="lib/bootstrap-slider.min.js" defer></script>
     <!-- css -->
     <link rel="stylesheet" href="lib/font-awesome.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="lib/bootstrap.min.css" crossorigin="anonymous">
@@ -12,6 +12,21 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Dithertron</title>
+    <meta name="description"
+        content="Convert images to 8-bit retro graphics for C-64, NES, SNES, ZX Spectrum, Atari, Apple II, Game Boy and 60+ formats. Authentic palettes, dithering, native export.">
+    <link rel="canonical" href="https://8bitworkshop.com/dithertron/">
+    <link rel="icon" href="https://8bitworkshop.com/favicon.ico">
+    <meta name="robots" content="index,follow,max-image-preview:large">
+    <!-- open graph tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="8bitworkshop">
+    <meta property="og:url" content="https://8bitworkshop.com/dithertron/">
+    <meta property="og:title" content="Dithertron — Image to 8-Bit Retro Graphics Converter">
+    <meta property="og:description"
+        content="Convert images to 8-bit retro graphics for C-64, NES, SNES, ZX Spectrum, Atari, Apple II, Game Boy and 60+ formats. Authentic palettes, dithering, native export.">
+    <meta property="og:image" content="https://8bitworkshop.com/blog/images/ide/dithertron-compare.png">
+    <meta property="og:image:alt" content="Original photo next to the same image dithered into retro computer palettes">
     <!-- twitter tags-->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@8bitworkshop">
@@ -19,20 +34,86 @@
     <meta name="twitter:image" content="https://8bitworkshop.com/blog/images/ide/dithertron-compare.png">
     <meta name="twitter:title" content="Dithertron by 8bitworkshop">
     <meta name="twitter:description" content="Crop, reduce, and dither images to 8-bit retro formats.">
-    <title>Dithertron</title>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Dithertron",
+        "url": "https://8bitworkshop.com/dithertron/",
+        "description": "Browser tool that converts photographs and pixel art into retro computer and console graphics (C-64, NES, SNES, Genesis, ZX Spectrum, Atari, Apple II, Game Boy and more), simulating each system's palette and hardware constraints, with native binary export.",
+        "applicationCategory": "MultimediaApplication",
+        "applicationSubCategory": "Image converter",
+        "operatingSystem": "Any (web browser)",
+        "browserRequirements": "Requires JavaScript and a web worker",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "codeRepository": "https://github.com/8bitworkshop/dithertron",
+        "screenshot": "https://8bitworkshop.com/blog/images/ide/dithertron-compare.png",
+        "featureList": [
+            "Convert any image to retro computer and console formats",
+            "Authentic hardware palettes and per-tile color limits",
+            "Error diffusion, ordered dithering and simulated annealing",
+            "Export PNG previews or native binary files",
+            "Open the result directly in the 8bitworkshop IDE"
+        ],
+        "author": { "@type": "Person", "name": "Steven Hugg" },
+        "publisher": { "@type": "Organization", "name": "8bitworkshop", "url": "https://8bitworkshop.com/" }
+    }
+    </script>
     <!-- local CSS -->
     <style type="text/css" media="screen">
         body {
             background: #999;
         }
         /* Custom CSS to make the container full-screen on desktop */
+        body.full-screen-container {
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+        .navbar-tagline {
+            font-size: 0.65rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #adb5bd;
+        }
+        h1 .navbar-brand {
+            letter-spacing: 0.3em;
+        }
+        .site-footer {
+            flex: 0 0 100%;
+            width: 100%;
+            background: #222;
+            color: #ccc;
+            padding: 2rem 1rem 1.5rem;
+            font-size: 0.85rem;
+        }
+        .site-footer h2 {
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #fff;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .site-footer a {
+            color: #9cf;
+        }
+        .site-footer ul,
+        .site-footer ol {
+            padding-left: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .site-footer li {
+            margin-bottom: 0.15rem;
+        }
         @media (min-width: 768px) {
             .full-screen-container {
-                height: 100vh;
+                min-height: 100vh;
                 display: flex;
                 align-items: center;
             }
-            .container-xl {
+            body > .container-xl {
                 height: 100vh;
                 display: flex;
                 flex-direction: column;
@@ -172,8 +253,8 @@
                     </li>
                 </ul>
             </div>
-            <div class="mx-auto order-0">
-                <a class="navbar-brand mx-auto" href="#">D I T H E R T R O N</a>
+            <div class="mx-auto order-0 text-center">
+                <h1 class="mb-0"><a class="navbar-brand" href="#">DITHERTRON</a></h1>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -188,27 +269,32 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item dropdown-link book-vcs" target="_book_a2600"
                                 href="https://www.amazon.com/gp/product/1541021304/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B01N4DSRIZ">
-                                <img src="images/books/book_a2600.png" />
+                                <img src="images/books/book_a2600.png"
+                                    alt="Making Games For The Atari 2600 book cover" />
                                 &nbsp;&nbsp;<span class="book-title">Making Games For The Atari 2600</span>
                             </a>
                             <a class="dropdown-item dropdown-link book-arcade" target="_book_arcade"
                                 href="https://www.amazon.com/gp/product/1545484759/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1545484759">
-                                <img src="images/books/book_arcade.png" />
+                                <img src="images/books/book_arcade.png"
+                                    alt="Making 8-bit Arcade Games in C book cover" />
                                 &nbsp;&nbsp;<span class="book-title">Making 8-bit Arcade Games in C</span>
                             </a>
                             <a class="dropdown-item dropdown-link book-verilog" target="_book_verilog"
                                 href="https://www.amazon.com/gp/product/1728619440/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1728619440">
-                                <img src="images/books/book_verilog.png" />
+                                <img src="images/books/book_verilog.png"
+                                    alt="Designing Video Game Hardware in Verilog book cover" />
                                 &nbsp;&nbsp;<span class="book-title">Designing Video Game Hardware in Verilog</span>
                             </a>
                             <a class="dropdown-item dropdown-link book-nes" target="_book_nes"
                                 href="https://www.amazon.com/gp/product/1075952727/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1075952727">
-                                <img src="images/books/book_nes.png" />
+                                <img src="images/books/book_nes.png"
+                                    alt="Making Games For The NES book cover" />
                                 &nbsp;&nbsp;<span class="book-title">Making Games For The NES</span>
                             </a>
                             <a class="dropdown-item dropdown-link book-c64" target="_book_c64"
                                 href="https://www.amazon.com/dp/B0DMKH8NGL">
-                              <img src="images/book_c64.png"/>
+                              <img src="images/book_c64.png"
+                                  alt="Making Games for the C-64 book cover" />
                               &nbsp;&nbsp;<span class="book-title">Making Games for the C-64</span>
                             </a>
                         </div>
@@ -437,16 +523,70 @@
             </div>
         </div>
         <!-- hidden canvas-->
-        <canvas id="resizecanvas" style="display:none">
+        <canvas id="resizecanvas" style="display:none"></canvas>
         <!-- hidden form -->
-        <FORM action="https://8bitworkshop.com/redir.html" method="GET" id="ideForm" target="_ide">
-        </FORM>
+        <form action="https://8bitworkshop.com/redir.html" method="GET" id="ideForm" target="_ide" hidden></form>
         <script>
             if (window.location.host == ('localhost:8000')) {
                 document.forms['ideForm'].action = '/';
             }
         </script>
     </div>
+    <!--
+    <footer class="site-footer">
+        <div class="container-xl">
+            <div class="row">
+                <div class="col-md-7">
+                    <h2>About Dithertron</h2>
+                    <p>Dithertron is a free, open-source image converter for retro computers and game consoles.
+                        Drop in a photo, a drawing, or a screenshot and it re-renders the picture using the real
+                        palette and the hardware limits of the target machine &mdash; then exports a native binary
+                        you can load into an emulator.</p>
+                    <p>Unlike a plain palette quantizer, Dithertron simulates the constraints that made 8-bit
+                        graphics hard: per-tile color limits, attribute clash, scanline and sprite restrictions,
+                        tile reuse, and palette quirks. It searches for the best color assignments with error
+                        diffusion, ordered dithering and simulated annealing, all inside your browser.</p>
+                    <h2>How to use it</h2>
+                    <ol>
+                        <li>Open or drop an image, or pick one of the examples.</li>
+                        <li>Pick a target format, such as C-64 Multi, NES, or ZX Spectrum.</li>
+                        <li>Adjust Bright, Contrast, Color, Diversity, Diffusion, Ordered and Noise until the
+                            result looks right.</li>
+                        <li>Download a PNG preview, export the native binary, or open the image in the
+                            <a href="https://8bitworkshop.com/">8bitworkshop IDE</a>.</li>
+                    </ol>
+                </div>
+                <div class="col-md-5">
+                    <h2>Supported formats</h2>
+                    <ul>
+                        <li><strong>Commodore:</strong> C-64 multicolor, hires and FLI; VIC-20; Amiga (lores,
+                            HAM6); Commander X16</li>
+                        <li><strong>Nintendo:</strong> NES, SNES (2/3/4/8bpp, Mode 7, direct color), Game Boy,
+                            Game Boy Color, Virtual Boy</li>
+                        <li><strong>Sega:</strong> Genesis / Mega Drive, Master System, Game Gear</li>
+                        <li><strong>Atari:</strong> 2600 (VCS), 7800, 8-bit ANTIC modes, ST</li>
+                        <li><strong>Sinclair / Amstrad:</strong> ZX Spectrum, Amstrad CPC</li>
+                        <li><strong>Apple:</strong> Apple II hires, lores and double-hires; Apple IIGS</li>
+                        <li><strong>Other:</strong> MSX and ColecoVision (TMS9918A), Intellivision, Bally
+                            Astrocade, PC CGA/EGA, BBC Micro, Mac 128K, Fairchild Channel F, Compucolor, Teletext,
+                            MC6847, Neo Geo Pocket Color, PC Engine, PICO-8, TIC-80</li>
+                    </ul>
+                    <h2>Links</h2>
+                    <ul>
+                        <li><a href="https://github.com/8bitworkshop/dithertron#dithertron">Documentation and
+                                README</a></li>
+                        <li><a href="https://www.npmjs.com/package/@8bws/dithertron">npm package
+                                (@8bws/dithertron)</a></li>
+                        <li><a href="https://github.com/8bitworkshop/dithertron">Source code on GitHub</a></li>
+                        <li><a href="https://8bitworkshop.com/">8bitworkshop retro programming IDE</a></li>
+                    </ul>
+                </div>
+            </div>
+            <p class="mt-3 mb-0"><small>Dithertron is free software under the GPL-3.0 license. Written by Steven
+                    Hugg.</small></p>
+        </div>
+    </footer>
+    -->
     <!-- local scripts-->
     <script src="dist/ui.js" type="module"></script>
 
