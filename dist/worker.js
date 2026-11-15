@@ -129,15 +129,12 @@
     var choices = reducePaletteChoices(imageData, colors, count, diversity, distfn);
     return new Uint32Array(choices.map((x) => colors[x.ind]));
   }
+  var _rgbaDiff = [0, 0, 0];
   function getRGBADiff(rgbref, rgbimg) {
-    var err = [0, 0, 0];
-    for (var i = 0; i < 3; i++) {
-      var d = (rgbref & 255) - (rgbimg & 255);
-      err[i] = d;
-      rgbref >>= 8;
-      rgbimg >>= 8;
-    }
-    return err;
+    _rgbaDiff[0] = (rgbref & 255) - (rgbimg & 255);
+    _rgbaDiff[1] = (rgbref >> 8 & 255) - (rgbimg >> 8 & 255);
+    _rgbaDiff[2] = (rgbref >> 16 & 255) - (rgbimg >> 16 & 255);
+    return _rgbaDiff;
   }
   function getRGBAErrorAbsolute(rgbref, rgbimg) {
     var mag = 0;
@@ -706,6 +703,7 @@
   var CGA_RGB_1H = [0, 5635925, 5592575, 5636095];
   var CGA_RGB_2H = [0, 16777045, 16733695, 16777215];
   var CGA_RGB_3H = [0, 16776960, 5592575, 16777215];
+  var EGA_RGB = generateRGBPalette(2, 2, 2);
   var SMS_RGB = generateRGBPalette(2, 2, 2);
   var WILLIAMS_RGB = generateRGBPalette(3, 3, 2);
   var MCR2_RGB = generateRGBPalette(4, 4, 4);
@@ -886,12 +884,33 @@
   var RGB_555 = generateRGBPalette(5, 5, 5);
   var GAMEBOY_COLOR_RGB = RGB_555;
   var AMIGA_OCS_COLOR_RGB = RGB_444;
+  var AMIGA_WORKBENCH_13_RGB = [
+    RGB(0, 85, 170),
+    // blue background
+    RGB(0, 0, 34),
+    // dark blue
+    RGB(255, 255, 255),
+    // white
+    RGB(255, 136, 0)
+    // orange
+  ];
+  var AMIGA_WORKBENCH_20_RGB = [
+    RGB(170, 170, 170),
+    // gray background
+    RGB(0, 0, 0),
+    // black
+    RGB(255, 255, 255),
+    // white
+    RGB(102, 136, 187)
+    // blue
+  ];
   var IIGS_COLOR_RGB = RGB_444;
   var GAMEGEAR_COLOR_RGB = RGB_444;
   var NEOGEO_POCKET_COLOR_RGB = RGB_444;
   var GENESIS_RGB = RGB_333;
   var SNES_B5G5R5_RGB = generateSNESB5G5R5();
   var SNES_BBPGGGPRRRP = generateSNESDirectColor();
+  var VDP9938_RGB = generateRGBPalette(3, 3, 3);
   var MC6847_PALETTE0 = [
     RGB(48, 210, 0),
     /* NTSC: RGB( 28, 213,  16), */
@@ -1119,6 +1138,18 @@
       block: { w: 8, h: 1, colors: 2 },
       cell: { w: 8, h: 8, msbToLsb: true },
       toNative: "exportTMS9918"
+    },
+    {
+      id: "msx2",
+      name: "MSX2 (Screen 2)",
+      width: 256,
+      height: 192,
+      conv: "Msx_Canvas",
+      pal: VDP9938_RGB,
+      reduce: 16,
+      block: { w: 8, h: 1, colors: 2 },
+      cell: { w: 8, h: 8, msbToLsb: true },
+      toNative: "exportMSX2"
     },
     {
       id: "apple2.hires",
@@ -1889,7 +1920,8 @@
       height: 350,
       scaleX: 350 / 640 * 1.37,
       conv: "DitheringCanvas",
-      pal: CGA_RGB,
+      pal: EGA_RGB,
+      reduce: 16,
       toNative: "exportFrameBuffer",
       exportFormat: { bpp: 1, np: 4 }
     },
@@ -2079,6 +2111,24 @@
       reduce: 16,
       extraColors: 48,
       toNative: "exportAmigaHAM6"
+    },
+    {
+      id: "amiga.lores.workbench13",
+      name: "Amiga (Workbench 1.3)",
+      width: 320,
+      height: 256,
+      conv: "DitheringCanvas",
+      pal: AMIGA_WORKBENCH_13_RGB,
+      toNative: "exportAmiga4"
+    },
+    {
+      id: "amiga.lores.workbench20",
+      name: "Amiga (Workbench 2.0)",
+      width: 320,
+      height: 256,
+      conv: "DitheringCanvas",
+      pal: AMIGA_WORKBENCH_20_RGB,
+      toNative: "exportAmiga4"
     },
     null,
     {
@@ -2550,6 +2600,12 @@
       this.noise = 0;
       this.diffuse = 0.8;
       this.ordered = 0;
+      // Alternate the scan direction on every row while error diffusion is on,
+      // so the error bias does not drift in one direction. Off by default; the
+      // UI enables it and systems can opt out with `serpentine: false`.
+      this.serpentine = false;
+      this.scanDirection = 1;
+      // 1 = left-to-right, -1 = right-to-left
       this.ditherfn = [];
       this.errfn = getRGBAErrorPerceptual;
       this.errorThreshold = 0;
@@ -2598,12 +2654,21 @@
       var palidx = this.getClosest(this.tmp2[0], valid);
       var rgbimg = this.pal[palidx];
       var err = getRGBADiff(rgbref, rgbimg);
-      for (var i = 0; i < 3; i++) {
-        var k = (this.err[errofs + i] + err[i]) * this.diffuse;
-        this.ditherfn.forEach((df) => {
-          this.err[errofs + i + (df[0] + df[1] * this.width) * 3] += k * df[2];
-        });
-        this.err[errofs + i] = 0;
+      if (this.diffuse > 0) {
+        var width = this.width;
+        var sd = this.scanDirection;
+        for (var i = 0; i < 3; i++) {
+          var k = (this.err[errofs + i] + err[i]) * this.diffuse;
+          this.ditherfn.forEach((df) => {
+            var dx = df[0] * sd;
+            this.err[errofs + i + (dx + df[1] * width) * 3] += k * df[2];
+          });
+          this.err[errofs + i] = 0;
+        }
+      } else {
+        this.err[errofs] = 0;
+        this.err[errofs + 1] = 0;
+        this.err[errofs + 2] = 0;
       }
       const errmag = (Math.abs(err[0]) + Math.abs(err[1] * 2) + Math.abs(err[2])) / (256 * 4);
       if (this.indexed[offset] != palidx) {
@@ -2625,8 +2690,28 @@
     iterate() {
       this.changes = 0;
       this.commit();
-      for (var i = 0; i < this.img.length; i++) {
-        this.update(i);
+      if (this.serpentine && this.diffuse > 0) {
+        var width = this.width;
+        var height = this.height;
+        for (var row = 0; row < height; row++) {
+          var rowBase = row * width;
+          var col;
+          if (row & 1) {
+            this.scanDirection = -1;
+            for (col = width - 1; col >= 0; col--)
+              this.update(rowBase + col);
+          } else {
+            this.scanDirection = 1;
+            for (col = 0; col < width; col++)
+              this.update(rowBase + col);
+          }
+        }
+        this.scanDirection = 1;
+      } else {
+        this.scanDirection = 1;
+        for (var i = 0; i < this.img.length; i++) {
+          this.update(i);
+        }
       }
       this.iterateCount++;
     }
@@ -4413,6 +4498,10 @@
     }
   };
   var HAM6_Canvas = class extends DitheringCanvas {
+    init() {
+      super.init();
+      this.serpentine = false;
+    }
     getValidColors(offset) {
       let prevrgb = offset % this.width == 0 ? this.pal[0] : this.img[offset - 1];
       let palindex = 16;
@@ -4477,6 +4566,7 @@
         this.dithcanv.diffuse = (sys.diffuse || 0) + 0;
         this.dithcanv.ordered = (sys.ordered || 0) + 0;
         this.dithcanv.ditherfn = sys.ditherfn || [];
+        this.dithcanv.serpentine = sys.serpentine === true;
         this.dithcanv.init();
       }
       this.dithcanv.iterate();
