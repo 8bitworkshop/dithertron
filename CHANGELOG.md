@@ -5,6 +5,8 @@ All notable changes to Dithertron are documented here. Versions follow the
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-15
+
 ### Added
 
 - An optional **Serpentine** scan (the `serpentine` setting / `dither()`
