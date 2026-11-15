@@ -2664,13 +2664,23 @@
       var err = getRGBADiff(rgbref, rgbimg);
       if (this.diffuse > 0) {
         var width = this.width;
+        var height = this.height;
         var sd = this.scanDirection;
+        var px = offset % width;
+        var py = (offset - px) / width;
         for (var i = 0; i < 3; i++) {
           var k = (this.err[errofs + i] + err[i]) * this.diffuse;
-          this.ditherfn.forEach((df) => {
+          for (var d = 0; d < this.ditherfn.length; d++) {
+            var df = this.ditherfn[d];
             var dx = df[0] * sd;
-            this.err[errofs + i + (dx + df[1] * width) * 3] += k * df[2];
-          });
+            var target = (py + df[1]) * width + px + dx;
+            if (target < 0 || target >= width * height) continue;
+            var trow = Math.floor(target / width);
+            var tcol = target - trow * width;
+            if (trow < py) continue;
+            if (trow == py && (sd > 0 ? tcol <= px : tcol >= px)) continue;
+            this.err[target * 3 + i] += k * df[2];
+          }
           this.err[errofs + i] = 0;
         }
       } else {
@@ -4529,12 +4539,15 @@
   var MAX_ITERATE_COUNT = 100;
   var TEMPERATURE_START_ITERATIONS = 10;
   var TEMPERATURE_STEP = 0.01;
+  var STALL_ITERATIONS = 10;
   var Dithertron = class {
     constructor() {
       this.sysparams = SYSTEMS[0];
       this.dithcanv = null;
       this.sourceImageData = null;
       this.pixelsAvailable = null;
+      this.bestChanges = Infinity;
+      this.stallCount = 0;
     }
     setSettings(sys) {
       this.sysparams = Object.assign({}, sys);
@@ -4583,7 +4596,15 @@
       if (this.dithcanv.iterateCount >= TEMPERATURE_START_ITERATIONS) {
         this.dithcanv.errorThreshold += TEMPERATURE_STEP;
       }
-      var final = this.dithcanv.changes == 0 || this.dithcanv.iterateCount > MAX_ITERATE_COUNT;
+      var changes = this.dithcanv.changes;
+      if (changes < this.bestChanges) {
+        this.bestChanges = changes;
+        this.stallCount = 0;
+      } else {
+        this.stallCount++;
+      }
+      var stalled = this.stallCount >= STALL_ITERATIONS;
+      var final = changes == 0 || this.dithcanv.iterateCount > MAX_ITERATE_COUNT || stalled;
       if (this.pixelsAvailable != null) {
         this.pixelsAvailable({
           img: this.dithcanv.img,
@@ -4607,6 +4628,8 @@
     }
     clear() {
       this.dithcanv = null;
+      this.bestChanges = Infinity;
+      this.stallCount = 0;
     }
     restart() {
       this.clear();
