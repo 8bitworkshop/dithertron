@@ -99,14 +99,28 @@ export class BaseDitheringCanvas {
         var err = getRGBADiff(rgbref, rgbimg);
         if (this.diffuse > 0) {
             var width = this.width;
+            var height = this.height;
             var sd = this.scanDirection;
+            var px = offset % width;
+            var py = (offset - px) / width;
             for (var i = 0; i < 3; i++) {
                 var k = (this.err[errofs + i] + err[i]) * this.diffuse;
-                this.ditherfn.forEach((df) => {
+                for (var d = 0; d < this.ditherfn.length; d++) {
+                    var df = this.ditherfn[d];
                     var dx = df[0] * sd; // mirror the kernel on right-to-left rows
-                    // TODO: don't wrap error around the edges of the image?
-                    this.err[errofs + i + (dx + df[1] * width) * 3] += k * df[2];
-                });
+                    var target = (py + df[1]) * width + px + dx;
+                    if (target < 0 || target >= width * height) continue;
+                    // Never deposit error into pixels that were already scanned
+                    // in this iteration: an unclamped kernel offset on a
+                    // right-to-left row wraps into the previous row, and that
+                    // stale error leaks into the next iteration and can keep
+                    // the dither from converging.
+                    var trow = Math.floor(target / width);
+                    var tcol = target - trow * width;
+                    if (trow < py) continue;
+                    if (trow == py && (sd > 0 ? tcol <= px : tcol >= px)) continue;
+                    this.err[target * 3 + i] += k * df[2];
+                }
                 this.err[errofs + i] = 0; // reset this pixel's error
             }
         } else {

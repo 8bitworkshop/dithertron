@@ -5,6 +5,18 @@ All notable changes to Dithertron are documented here. Versions follow the
 
 ## [Unreleased]
 
+### Fixed
+
+- Serpentine error diffusion no longer deposits error into pixels that were
+  already scanned. On right-to-left rows the mirrored kernel offsets could
+  wrap into the previous row, and that stale error carried over into the next
+  iteration, so serpentine dithered images oscillated and took far longer to
+  settle (or never did). Left-to-right output is unchanged.
+- Dithering now stops when the number of changed pixels has not improved for
+  ten iterations. A few block-based systems could settle into a small limit
+  cycle that never reached zero changes and kept running until the iteration
+  cap.
+
 ## [1.4.1] - 2026-11-15
 
 ### Fixed

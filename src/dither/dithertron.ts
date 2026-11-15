@@ -16,6 +16,11 @@ export const MAX_ITERATE_COUNT = 100;
 
 const TEMPERATURE_START_ITERATIONS = 10;
 const TEMPERATURE_STEP = 0.01;
+// Some block-param canvases can settle into a small limit cycle where a few
+// pixels (or a single block's colors) flip back and forth forever instead of
+// reaching zero changes. If the number of changes stops improving for this
+// many iterations, accept the current image and stop.
+const STALL_ITERATIONS = 10;
 
 export interface DithertronInterface {
     iterate(): void;
@@ -27,6 +32,8 @@ export class Dithertron implements DithertronInterface {
     sourceImageData: Uint32Array | null = null;
     pixelsAvailable: ((msg: PixelsAvailableMessage) => void) | null = null;
     timer: any;
+    bestChanges = Infinity;
+    stallCount = 0;
 
     setSettings(sys: DithertronSettings) {
         this.sysparams = Object.assign({}, sys); // clone settings
@@ -71,7 +78,15 @@ export class Dithertron implements DithertronInterface {
         if (this.dithcanv.iterateCount >= TEMPERATURE_START_ITERATIONS) {
             this.dithcanv.errorThreshold += TEMPERATURE_STEP;
         }
-        var final = this.dithcanv.changes == 0 || this.dithcanv.iterateCount > MAX_ITERATE_COUNT;
+        var changes = this.dithcanv.changes;
+        if (changes < this.bestChanges) {
+            this.bestChanges = changes;
+            this.stallCount = 0;
+        } else {
+            this.stallCount++;
+        }
+        var stalled = this.stallCount >= STALL_ITERATIONS;
+        var final = changes == 0 || this.dithcanv.iterateCount > MAX_ITERATE_COUNT || stalled;
         if (this.pixelsAvailable != null) {
             this.pixelsAvailable({
                 img: this.dithcanv.img,
@@ -95,6 +110,8 @@ export class Dithertron implements DithertronInterface {
     }
     clear() {
         this.dithcanv = null;
+        this.bestChanges = Infinity;
+        this.stallCount = 0;
     }
     restart() {
         this.clear();
