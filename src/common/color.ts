@@ -204,14 +204,32 @@ export function getRGBChroma(rgb: number) {
 // from JPEG compression and resizing stays below it.
 const GRAY_CHROMA_THRESHOLD = 48;
 
+// Palette entries with less chroma than this count as gray when deciding
+// whether a palette can represent grays at all.
+const PALETTE_GRAY_CHROMA = 24;
+
 // Wraps an error function so that when the source pixel is (nearly) gray, a
 // colorful palette entry is penalized relative to a gray one. Without this a
 // palette with few grays (e.g. the TMS9918A) may pick midtone colors for a
 // black-and-white image because they are, by raw perceptual distance, slightly
 // closer than the available light gray. `grayBias` scales the penalty; colored
 // source pixels are unaffected, so photos keep their colors.
-export function makeGrayBiasErrorFunction(errfn: RGBDistanceFunction, grayBias: number): RGBDistanceFunction {
+//
+// The bias only makes sense when the palette actually has gray shades to pick.
+// If it has fewer than two (the Game Boy's green screen has none, the 4-color
+// CGA sets only have black), penalizing colorfulness would just push every
+// gray toward the darkest, dullest entry: white turns into mid green on the
+// Game Boy and a mid gray turns into black on CGA. In that case return the
+// plain error function, so the `grayBias` setting has no effect.
+export function makeGrayBiasErrorFunction(errfn: RGBDistanceFunction, grayBias: number, pal?: ArrayLike<number>): RGBDistanceFunction {
     if (!(grayBias > 0)) return errfn;
+    if (pal != null) {
+        let grayEntries = 0;
+        for (let i = 0; i < pal.length; i++) {
+            if (getRGBChroma(pal[i]) < PALETTE_GRAY_CHROMA) grayEntries++;
+        }
+        if (grayEntries < 2) return errfn;
+    }
     return (a: number, b: number) => {
         const base = errfn(a, b);
         const sourceChroma = getRGBChroma(a);

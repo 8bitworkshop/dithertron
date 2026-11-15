@@ -41,10 +41,12 @@ export class Dithertron implements DithertronInterface {
             if (!this.sourceImageData) throw new Error("no sourceImageData");
             var pal: Uint32Array = new Uint32Array(sys.pal);
             var baseErrfn = (ERROR_FUNCTIONS as any)[sys.errfn || 'perceptual'] || getRGBAErrorPerceptual;
-            var errfn = makeGrayBiasErrorFunction(baseErrfn, sys.grayBias || 0);
+            var errfn = makeGrayBiasErrorFunction(baseErrfn, sys.grayBias || 0, pal);
             if (sys.reduce) {
                 pal = reducePalette(this.sourceImageData, pal,
                     sys.reduce, sys.paletteDiversity || 0, errfn);
+                // The reduction may drop the grays, so check the actual palette.
+                errfn = makeGrayBiasErrorFunction(baseErrfn, sys.grayBias || 0, pal);
             }
             if (sys.extraColors) {
                 let pal2 = new Uint32Array(pal.length + sys.extraColors);

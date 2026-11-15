@@ -48,7 +48,9 @@ export interface DitherOptions {
      * How strongly gray areas prefer gray palette entries. 0 (default) is off;
      * the UI slider defaults to 50. Raise it for a black-and-white image on a
      * palette with few grays (e.g. MSX/Coleco) to dither with grays instead of
-     * colored midtones. Colored parts of the image are unaffected.
+     * colored midtones. Colored parts of the image are unaffected. Ignored if
+     * the palette has fewer than two gray shades, e.g. the Game Boy's green
+     * screen, where it would otherwise darken bright grays.
      */
     grayBias?: number;
     /** 'perceptual' (default), 'hue', 'dist' or 'max'. */

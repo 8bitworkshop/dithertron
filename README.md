@@ -40,7 +40,7 @@ approach with decreasing noise over time.
 | **Serpentine** | Alternate the dithering scan direction on every row (left-to-right, then right-to-left) to avoid directional drift. On by default in the UI; the `serpentine` setting/option defaults to off so library output is unchanged. |
 | **Ordered** | Amount of ordered (Bayer) dithering blended in. Default 0. |
 | **Noise** | Amount of annealing noise applied while choosing block colors (block-based modes only). Default 5. |
-| **Gray** | How strongly gray parts of the image prefer gray palette entries. Default 50; 0 is off. This keeps a black-and-white image from picking colorful midtones on palettes with few grays (e.g. MSX/Coleco). Lower it to let colored midtones into neutral areas; colored parts of the image are unaffected. The `dither()` option defaults to 0. |
+| **Gray** | How strongly gray parts of the image prefer gray palette entries. Default 50; 0 is off. This keeps a black-and-white image from picking colorful midtones on palettes with few grays (e.g. MSX/Coleco). Lower it to let colored midtones into neutral areas; colored parts of the image are unaffected. Ignored when the palette has fewer than two gray shades (e.g. the green Game Boy screen), since there is nothing to prefer. The `dither()` option defaults to 0. |
 
 The reduced color palette is shown as swatches beneath the output canvas. For adaptive-palette
 formats (those that reduce a larger palette) click a swatch to change that color, and use

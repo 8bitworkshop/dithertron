@@ -5,6 +5,15 @@ All notable changes to Dithertron are documented here. Versions follow the
 
 ## [Unreleased]
 
+### Fixed
+
+- The **Gray** bias no longer darkens palettes that have no gray shades. It is
+  now ignored when a palette has fewer than two gray entries, so bright grays
+  stay bright on the green Game Boy screen (white used to become mid green) and
+  on 4-color CGA palettes that only contain black as a gray (mid gray used to
+  become black). Palettes with real grays (MSX, ZX Spectrum, Game Boy Mono,
+  ...) are unaffected.
+
 ## [1.4.0] - 2026-11-15
 
 ### Added

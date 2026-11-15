@@ -91,7 +91,9 @@ export interface DithertronSettings {
     // How much gray areas prefer gray palette entries. 0 (default) is off
     // (the UI slider defaults to 50, i.e. 1.5); around 1.5-3 makes a
     // black-and-white image dither with grays instead of picking colorful
-    // midtones. Colored source pixels are not affected.
+    // midtones. Colored source pixels are not affected. Ignored when the
+    // palette has fewer than two gray shades, since there is nothing to
+    // prefer (e.g. the green Game Boy screen).
     grayBias?: number;
     // Alternate the error diffusion scan direction every row (default true).
     // Set to false to scan every row left-to-right.
