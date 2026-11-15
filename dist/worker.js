@@ -203,8 +203,16 @@
     return Math.max(r, g, b) - Math.min(r, g, b);
   }
   var GRAY_CHROMA_THRESHOLD = 48;
-  function makeGrayBiasErrorFunction(errfn, grayBias) {
+  var PALETTE_GRAY_CHROMA = 24;
+  function makeGrayBiasErrorFunction(errfn, grayBias, pal) {
     if (!(grayBias > 0)) return errfn;
+    if (pal != null) {
+      let grayEntries = 0;
+      for (let i = 0; i < pal.length; i++) {
+        if (getRGBChroma(pal[i]) < PALETTE_GRAY_CHROMA) grayEntries++;
+      }
+      if (grayEntries < 2) return errfn;
+    }
     return (a, b) => {
       const base = errfn(a, b);
       const sourceChroma = getRGBChroma(a);
@@ -4541,7 +4549,7 @@
         if (!this.sourceImageData) throw new Error("no sourceImageData");
         var pal = new Uint32Array(sys.pal);
         var baseErrfn = ERROR_FUNCTIONS[sys.errfn || "perceptual"] || getRGBAErrorPerceptual;
-        var errfn = makeGrayBiasErrorFunction(baseErrfn, sys.grayBias || 0);
+        var errfn = makeGrayBiasErrorFunction(baseErrfn, sys.grayBias || 0, pal);
         if (sys.reduce) {
           pal = reducePalette(
             this.sourceImageData,
@@ -4550,6 +4558,7 @@
             sys.paletteDiversity || 0,
             errfn
           );
+          errfn = makeGrayBiasErrorFunction(baseErrfn, sys.grayBias || 0, pal);
         }
         if (sys.extraColors) {
           let pal2 = new Uint32Array(pal.length + sys.extraColors);
