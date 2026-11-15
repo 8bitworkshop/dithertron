@@ -39,7 +39,7 @@ approach with decreasing noise over time.
 | **Diffusion** | How much error is diffused to neighboring pixels and the diffusion kernel. Default 75. |
 | **Ordered** | Amount of ordered (Bayer) dithering blended in. Default 0. |
 | **Noise** | Amount of annealing noise applied while choosing block colors (block-based modes only). Default 5. |
-| **Gray** | How strongly gray parts of the image prefer gray palette entries. 0 (default) is off; raise it for a black-and-white image on a palette with few grays (e.g. MSX/Coleco) to dither midtones with grays instead of colored substitutes. Colored parts of the image are unaffected. |
+| **Gray** | How strongly gray parts of the image prefer gray palette entries. Default 50; 0 is off. This keeps a black-and-white image from picking colorful midtones on palettes with few grays (e.g. MSX/Coleco). Lower it to let colored midtones into neutral areas; colored parts of the image are unaffected. The `dither()` option defaults to 0. |
 
 The reduced color palette is shown as swatches beneath the output canvas.
 

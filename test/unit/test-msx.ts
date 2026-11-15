@@ -30,14 +30,17 @@ t.test("gray bias keeps a black-and-white image gray on MSX", async t => {
     t.ok(plainUsed.some(i => getRGBChroma(plain.pal[i]) > 16),
         "without the bias, midtones pick colorful palette entries");
 
-    const biased = dither(image, 'msx', { ...options, grayBias: 3 });
-    const biasedUsed = Array.from(new Set(biased.indexed));
-    t.ok(biasedUsed.length >= 2, "uses more than one gray");
-    for (const i of biasedUsed) {
-        t.ok(getRGBChroma(biased.pal[i]) <= 8,
-            "uses only gray palette entries, got " + biased.pal[i].toString(16));
+    // 1.5 is the UI slider default (50); it must already be enough to go gray.
+    for (const grayBias of [1.5, 3]) {
+        const biased = dither(image, 'msx', { ...options, grayBias });
+        const biasedUsed = Array.from(new Set(biased.indexed));
+        t.ok(biasedUsed.length >= 2, `uses more than one gray (bias ${grayBias})`);
+        for (const i of biasedUsed) {
+            t.ok(getRGBChroma(biased.pal[i]) <= 8,
+                "uses only gray palette entries, got " + biased.pal[i].toString(16));
+        }
+        t.equal(biased.settings.grayBias, grayBias);
     }
-    t.equal(biased.settings.grayBias, 3);
     t.end();
 });
 
