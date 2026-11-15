@@ -5,6 +5,8 @@ All notable changes to Dithertron are documented here. Versions follow the
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-11-15
+
 ### Fixed
 
 - The **Gray** bias no longer darkens palettes that have no gray shades. It is

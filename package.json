@@ -1,6 +1,6 @@
 {
   "name": "@8bws/dithertron",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Convert images to retro computer graphics formats: palette reduction and dithering with per-system hardware constraints",
   "keywords": [
     "dither",
