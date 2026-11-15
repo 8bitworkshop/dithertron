@@ -110,15 +110,16 @@ export function reducePalette(
 
 //
 
+// Per-pixel error diffusion runs in the hot loop; reuse a buffer instead of
+// allocating a new array for every pixel. Callers must consume the result
+// before the next call.
+const _rgbaDiff = [0, 0, 0];
+
 export function getRGBADiff(rgbref: number, rgbimg: number) {
-    var err = [0,0,0];
-    for (var i=0; i<3; i++) {
-        var d = (rgbref & 0xff) - (rgbimg & 0xff);
-        err[i] = d;
-        rgbref >>= 8;
-        rgbimg >>= 8;
-    }
-    return err;
+    _rgbaDiff[0] = (rgbref & 0xff) - (rgbimg & 0xff);
+    _rgbaDiff[1] = ((rgbref >> 8) & 0xff) - ((rgbimg >> 8) & 0xff);
+    _rgbaDiff[2] = ((rgbref >> 16) & 0xff) - ((rgbimg >> 16) & 0xff);
+    return _rgbaDiff;
 }
 
 export function getRGBAErrorAbsolute(rgbref: number, rgbimg: number) {

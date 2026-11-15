@@ -7,6 +7,26 @@ All notable changes to Dithertron are documented here. Versions follow the
 
 ### Added
 
+- An optional **Serpentine** scan (the `serpentine` setting / `dither()`
+  option) that alternates the error-diffusion direction every row. The UI has
+  a checkbox for it, on by default; the library default stays left-to-right so
+  existing output is unchanged. HAM6 keeps scanning left-to-right because each
+  pixel depends on the previous one.
+- Palette editing in the UI: click a swatch to change that color and use
+  **Reset colors** to return to the generated palette. Only adaptive-palette
+  formats whose native export carries (or can interpret) the palette offer
+  editing; fixed hardware palettes stay read-only.
+- A **Lock crop to target aspect** checkbox. The crop box is locked by
+  default; uncheck it to crop freely.
+- PNG downloads include a `pHYs` chunk with the target pixel aspect ratio, so
+  the image has the same shape outside the browser.
+- **MSX2 (Screen 2)** — 256 x 192, 16 of 512 colors, 2 colors per 8x1 block,
+  with a native export (pattern table, color table and RGB333 palette).
+- **Amiga Workbench 1.3 / 2.0** presets (320 x 256, 4 colors) with native
+  export.
+- The PC EGA mode 10h preset now dithers from the full 64-color EGA palette
+  and picks the best 16, instead of using the 16 fixed CGA colors.
+- The NES viewer pads the CHR bank to a full 8 KB, as emulators expect.
 - A **Gray** slider (and the `grayBias` setting / `dither()` option) that
   makes gray parts of an image prefer gray palette entries. This keeps a
   black-and-white image from picking colorful midtones on palettes with few
@@ -14,6 +34,11 @@ All notable changes to Dithertron are documented here. Versions follow the
   The UI slider defaults to 50, which is enough to keep a black-and-white
   image gray; the `grayBias` setting/option defaults to 0 so library behavior
   is unchanged.
+
+### Changed
+
+- Error diffusion reuses its per-pixel difference buffer instead of allocating
+  a new array for every pixel.
 
 ## [1.3.1] - 2026-10-19
 

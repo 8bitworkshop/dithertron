@@ -16,7 +16,7 @@ reduction, and dithering entirely in your browser.
 1. **Load an image** — use the *Examples* dropdown, click *Open…*, or drag/drop or
    paste an image anywhere on the page.
 2. **Crop** the image with the handles on the left. The crop box is locked to the
-   target aspect ratio.
+   target aspect ratio; uncheck **Lock crop to target aspect** to crop freely.
 3. **Choose a target format** from the *Convert to* dropdown.
 4. **Tune the sliders** until you're happy with the result.
 5. **Export** — download a PNG, download the native binary, or open a viewer code
@@ -37,11 +37,18 @@ approach with decreasing noise over time.
 | **Color** | Saturation. 50 is neutral, 0 is grayscale, 100 is doubled. Next to it is the **color error** function used when matching a pixel to a palette entry: Perceptual, Hue-Based, Distance, or Maximum. |
 | **Diversity** | How eagerly block palettes pick new colors vs. reusing existing ones (reduced-palette modes only). Default 60. |
 | **Diffusion** | How much error is diffused to neighboring pixels and the diffusion kernel. Default 75. |
+| **Serpentine** | Alternate the dithering scan direction on every row (left-to-right, then right-to-left) to avoid directional drift. On by default in the UI; the `serpentine` setting/option defaults to off so library output is unchanged. |
 | **Ordered** | Amount of ordered (Bayer) dithering blended in. Default 0. |
 | **Noise** | Amount of annealing noise applied while choosing block colors (block-based modes only). Default 5. |
 | **Gray** | How strongly gray parts of the image prefer gray palette entries. Default 50; 0 is off. This keeps a black-and-white image from picking colorful midtones on palettes with few grays (e.g. MSX/Coleco). Lower it to let colored midtones into neutral areas; colored parts of the image are unaffected. The `dither()` option defaults to 0. |
 
-The reduced color palette is shown as swatches beneath the output canvas.
+The reduced color palette is shown as swatches beneath the output canvas. For adaptive-palette
+formats (those that reduce a larger palette) click a swatch to change that color, and use
+**Reset colors** to go back to the palette Dithertron picked. Formats with a fixed hardware
+palette or an index-only native export show read-only swatches.
+
+Downloaded PNGs carry the pixel aspect ratio in a `pHYs` chunk, so desktop image viewers
+and editors show the same shape as the preview.
 
 For modes with constrained palette choices (e.g. C64 Hires, ZX Spectrum, MSX/Coleco)
 it usually helps to reduce the **Diffusion** parameter, otherwise dithering errors
@@ -240,6 +247,9 @@ previewed and/or downloaded as an image.
 * NES (5 color, full screen) - 256 x 240, 5 out of 64 colors
 * Amiga (Lores) - 320 x 256, 32 out of 4096 colors
 * Amiga (Lores, HAM6) - 320 x 256, 16 out of 4096 colors
+* Amiga (Workbench 1.3) - 320 x 256, 4 colors
+* Amiga (Workbench 2.0) - 320 x 256, 4 colors
+* MSX2 (Screen 2) - 256 x 192, 16 out of 512 colors, 2 colors per 8x1 block
 * Apple ][ (Lores) - 40 x 48, 16 colors
 * PC CGA (Mode 04h, palette 1) - 320 x 200, 4 colors
 * PC CGA (Mode 04h, bright 1) - 320 x 200, 4 colors
@@ -248,7 +258,7 @@ previewed and/or downloaded as an image.
 * PC CGA (Mode 05h) - 320 x 200, 4 colors
 * PC CGA (Mode 05h, bright) - 320 x 200, 4 colors
 * PC EGA (Mode 0Dh) - 320 x 200, 16 colors
-* PC EGA (Mode 10h) - 640 x 350, 16 colors
+* PC EGA (Mode 10h) - 640 x 350, 16 out of 64 colors
 * Bally MCR-II - 256 x 240, 64 out of 4096 colors, 4 colors per 16x16 block
 * MC6847 (CG2, palette 0) - 128 x 64, 4 out of 4 colors
 * MC6847 (CG2, palette 1) - 128 x 64, 4 out of 4 colors

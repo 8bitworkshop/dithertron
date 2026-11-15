@@ -38,6 +38,19 @@ t.test("custom palette is respected", async t => {
   t.end();
 });
 
+t.test("serpentine scan is opt-in and changes the error diffusion", async t => {
+  const img = gradient(64, 32);
+  const sys = { width: 64, height: 32, colors: 4 };
+  const opts = { diffuse: 0.75, ditherfn: kernels.FLOYD, iterations: 1 };
+  const normal = dither(img, sys, opts);
+  const explicitOff = dither(img, sys, { ...opts, serpentine: false });
+  t.same(explicitOff.indexed, normal.indexed, "left-to-right is the default");
+  const serp = dither(img, sys, { ...opts, serpentine: true });
+  t.notSame(serp.indexed, normal.indexed, "alternating rows produce a different pattern");
+  t.equal(serp.settings.serpentine, true);
+  t.end();
+});
+
 t.test("createSystem validates input", async t => {
   t.throws(() => createSystem({ width: 0, height: 10, colors: 4 }));
   t.throws(() => createSystem({ width: 10, height: 10, colors: 1 }));

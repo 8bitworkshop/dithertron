@@ -39,6 +39,11 @@ export class BaseDitheringCanvas {
     noise: number = 0;
     diffuse: number = 0.8;
     ordered: number = 0.0;
+    // Alternate the scan direction on every row while error diffusion is on,
+    // so the error bias does not drift in one direction. Off by default; the
+    // UI enables it and systems can opt out with `serpentine: false`.
+    serpentine: boolean = false;
+    scanDirection: number = 1; // 1 = left-to-right, -1 = right-to-left
     ditherfn: DitherKernel = [];
     errfn: RGBDistanceFunction = getRGBAErrorPerceptual;
     errorThreshold = 0;
@@ -92,13 +97,22 @@ export class BaseDitheringCanvas {
         var rgbimg = this.pal[palidx];
         // compute error and distribute to neighbors
         var err = getRGBADiff(rgbref, rgbimg);
-        for (var i = 0; i < 3; i++) {
-            var k = (this.err[errofs + i] + err[i]) * this.diffuse;
-            // TODO: don't wrap off right edge?
-            this.ditherfn.forEach((df) => {
-                this.err[errofs + i + (df[0] + df[1] * this.width) * 3] += k * df[2];
-            });
-            this.err[errofs + i] = 0; // reset this pixel's error
+        if (this.diffuse > 0) {
+            var width = this.width;
+            var sd = this.scanDirection;
+            for (var i = 0; i < 3; i++) {
+                var k = (this.err[errofs + i] + err[i]) * this.diffuse;
+                this.ditherfn.forEach((df) => {
+                    var dx = df[0] * sd; // mirror the kernel on right-to-left rows
+                    // TODO: don't wrap error around the edges of the image?
+                    this.err[errofs + i + (dx + df[1] * width) * 3] += k * df[2];
+                });
+                this.err[errofs + i] = 0; // reset this pixel's error
+            }
+        } else {
+            this.err[errofs] = 0;
+            this.err[errofs + 1] = 0;
+            this.err[errofs + 2] = 0;
         }
         // set new pixel rgb
         const errmag = (Math.abs(err[0]) + Math.abs(err[1]*2) + Math.abs(err[2])) / (256 * 4);
@@ -129,8 +143,28 @@ export class BaseDitheringCanvas {
         // fail on some pixels as these pixel chose a color that is not
         // present in the color params.
         this.commit();
-        for (var i = 0; i < this.img.length; i++) {
-            this.update(i);
+        if (this.serpentine && this.diffuse > 0) {
+            var width = this.width;
+            var height = this.height;
+            for (var row = 0; row < height; row++) {
+                var rowBase = row * width;
+                var col;
+                if (row & 1) {
+                    this.scanDirection = -1;
+                    for (col = width - 1; col >= 0; col--)
+                        this.update(rowBase + col);
+                } else {
+                    this.scanDirection = 1;
+                    for (col = 0; col < width; col++)
+                        this.update(rowBase + col);
+                }
+            }
+            this.scanDirection = 1;
+        } else {
+            this.scanDirection = 1;
+            for (var i = 0; i < this.img.length; i++) {
+                this.update(i);
+            }
         }
         this.iterateCount++;
     }

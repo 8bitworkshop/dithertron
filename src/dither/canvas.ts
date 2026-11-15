@@ -1336,6 +1336,12 @@ export class GBC_Canvas extends SubPalette_Canvas {
 // (red, green, blue in that order). The held color restarts from palette
 // entry 0 at the start of every scanline.
 export class HAM6_Canvas extends DitheringCanvas {
+    override init(): void {
+        super.init();
+        // each pixel's legal colors depend on the previous (left) pixel, so a
+        // right-to-left row would not match how the hardware holds the color
+        this.serpentine = false;
+    }
     getValidColors(offset: number): number[] {
         let prevrgb = (offset % this.width == 0) ? this.pal[0] : this.img[offset - 1];
         let palindex = 16;

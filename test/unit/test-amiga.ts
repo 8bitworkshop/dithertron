@@ -52,6 +52,24 @@ t.test('amiga.lores export', async t => {
     t.equal(badPixel, 0, 'bitplanes hold each pixel\'s color number and the registers reproduce the image');
 });
 
+t.test('amiga.lores.workbench13 export', async t => {
+    const { dt, last, iters } = await converge('amiga.lores.workbench13');
+    const canv: any = dt.dithcanv!;
+    const out = exportfuncs.exportAmiga4(last, dt.sysparams);
+
+    t.ok(iters < 20, 'converged quickly with diffusion');
+    t.equal(out.length, 8 + 2 * 40 * 256, '4 color registers and two 320x256 bitplanes');
+
+    let bad = 0;
+    for (let y = 0; y < last.height; y++)
+        for (let x = 0; x < last.width; x++) {
+            const v = planeBits(out, 4, 2, last.width, last.height, x, y);
+            if (v !== canv.indexed[y * last.width + x]) bad++;
+            if ((colorRegister(out, v) & 0xffffff) !== (last.img[y * last.width + x] & 0xffffff)) bad++;
+        }
+    t.equal(bad, 0, 'bitplanes hold each pixel\'s color number and the registers reproduce the image');
+});
+
 t.test('amiga.lores.ham6 export', async t => {
     const { dt, last, iters } = await converge('amiga.lores.ham6');
     const canv: any = dt.dithcanv!;

@@ -61,6 +61,7 @@ export class Dithertron implements DithertronInterface {
             this.dithcanv.diffuse = (sys.diffuse || 0) + 0;
             this.dithcanv.ordered = (sys.ordered || 0) + 0;
             this.dithcanv.ditherfn = sys.ditherfn || [];
+            this.dithcanv.serpentine = sys.serpentine === true;
             this.dithcanv.init();
         }
         this.dithcanv.iterate();

@@ -162,6 +162,8 @@ export const CGA_RGB_3 = [0x000000, 0xAAAA00, 0x0000AA, 0xAAAAAA];
 export const CGA_RGB_1H = [0x000000, 0x55FF55, 0x5555FF, 0x55FFFF];
 export const CGA_RGB_2H = [0x000000, 0xFFFF55, 0xFF55FF, 0xFFFFFF];
 export const CGA_RGB_3H = [0x000000, 0xFFFF00, 0x5555FF, 0xFFFFFF];
+// EGA/MCGA 64-color palette (2 bits per channel). Mode 10h shows 16 of these.
+export const EGA_RGB = generateRGBPalette(2, 2, 2);
 export const SMS_RGB = generateRGBPalette(2, 2, 2);
 export const WILLIAMS_RGB = generateRGBPalette(3, 3, 2);
 export const MCR2_RGB = generateRGBPalette(4, 4, 4);
@@ -294,12 +296,30 @@ export const RGB_444 = generateRGBPalette(4, 4, 4);
 export const RGB_555 = generateRGBPalette(5, 5, 5);
 export const GAMEBOY_COLOR_RGB = RGB_555;
 export const AMIGA_OCS_COLOR_RGB = RGB_444;
+
+// Default Workbench palettes: 4 colors (2 bitplanes).
+export const AMIGA_WORKBENCH_13_RGB = [
+    RGB(0x00, 0x55, 0xaa), // blue background
+    RGB(0x00, 0x00, 0x22), // dark blue
+    RGB(0xff, 0xff, 0xff), // white
+    RGB(0xff, 0x88, 0x00), // orange
+];
+
+export const AMIGA_WORKBENCH_20_RGB = [
+    RGB(0xaa, 0xaa, 0xaa), // gray background
+    RGB(0x00, 0x00, 0x00), // black
+    RGB(0xff, 0xff, 0xff), // white
+    RGB(0x66, 0x88, 0xbb), // blue
+];
+
 export const IIGS_COLOR_RGB = RGB_444;
 export const GAMEGEAR_COLOR_RGB = RGB_444;
 export const NEOGEO_POCKET_COLOR_RGB = RGB_444;
 export const GENESIS_RGB = RGB_333;
 export const SNES_B5G5R5_RGB = generateSNESB5G5R5();
 export const SNES_BBPGGGPRRRP = generateSNESDirectColor();
+
+export const VDP9938_RGB = generateRGBPalette(3, 3, 3);
 
 export const MC6847_PALETTE0 = [
     RGB(0x30, 0xd2, 0x00),    /* NTSC: RGB( 28, 213,  16), */   // green 

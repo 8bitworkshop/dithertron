@@ -11,6 +11,7 @@ import { saveAs } from 'file-saver';
 import localforage from 'localforage';
 import { EXAMPLE_IMAGES } from "./sampleimages.js";
 import { TextOverlay } from "./textoverlay.js";
+import { pngWithPixelAspect } from "../common/png.js";
 
 var cropper : Cropper;
 
@@ -18,6 +19,7 @@ var brightSlider = document.getElementById('brightSlider') as HTMLInputElement;
 var contrastSlider = document.getElementById('contrastSlider') as HTMLInputElement;
 var saturationSlider = document.getElementById('saturationSlider') as HTMLInputElement;
 var graySlider = document.getElementById('graySlider') as HTMLInputElement;
+var serpentineCheckbox = document.getElementById('serpentineCheckbox') as HTMLInputElement;
 var noiseSlider = document.getElementById('noiseSlider') as HTMLInputElement;
 var diffuseSlider = document.getElementById('diffuseSlider') as HTMLInputElement;
 var orderedSlider = document.getElementById('orderedSlider') as HTMLInputElement;
@@ -72,6 +74,14 @@ let textOverlay: TextOverlay | null = null;
 
 var filenameLoaded: string;
 var presetLoaded: string;
+
+// Palette editing state. The palette shown beneath the canvas is editable for
+// systems with a small palette and no extra colors (HAM6 etc. are excluded).
+var currentPalette: Uint32Array | null = null; // palette currently displayed
+var basePalette: Uint32Array | null = null; // the system's unedited palette
+var paletteEdited = false;
+var paletteColorInput: HTMLInputElement | null = null;
+var paletteColorIndex = -1;
 
 const ALL_DITHER_SETTINGS: DitherSetting[] = [
     { name: "Floyd-Steinberg", kernel: kernels.FLOYD },
@@ -203,6 +213,12 @@ function resetImage() {
     dithertron.settings.noise = parseFloat(noiseSlider.value);
     dithertron.settings.paletteDiversity = parseFloat(diversitySlider.value) / 200 + 0.75;
     dithertron.settings.grayBias = parseFloat(graySlider.value) / 100 * 3;
+    dithertron.settings.serpentine = serpentineCheckbox.checked;
+    if (paletteEdited && currentPalette) {
+        // Keep the user's palette. When its length equals `reduce`, the
+        // reducer passes it through unchanged (see reducePalette).
+        dithertron.settings.pal = currentPalette;
+    }
     dithertron.setSettings(dithertron.settings);
     dithertron.restart();
 }
@@ -230,13 +246,71 @@ function showSystemInfo(sys: DithertronSettings) {
         .attr('title', sys.caveat || "");
 }
 
+function colorToHex(col: number) {
+    const r = col & 0xff, g = (col >> 8) & 0xff, b = (col >> 16) & 0xff;
+    return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+}
+
+function hexToColor(hex: string) {
+    const v = parseInt(hex.replace('#', ''), 16);
+    return ((v >> 16) & 0xff) | (v & 0xff00) | ((v & 0xff) << 16) | 0xff000000;
+}
+
+function openPaletteColorPicker(index: number) {
+    if (!currentPalette || index < 0 || index >= currentPalette.length) return;
+    if (!paletteColorInput) {
+        paletteColorInput = document.createElement('input');
+        paletteColorInput.type = 'color';
+        paletteColorInput.style.position = 'fixed';
+        paletteColorInput.style.left = '-100px';
+        document.body.appendChild(paletteColorInput);
+        paletteColorInput.addEventListener('change', () => {
+            if (!currentPalette || paletteColorIndex < 0 || !paletteColorInput) return;
+            currentPalette[paletteColorIndex] = hexToColor(paletteColorInput.value);
+            paletteEdited = true;
+            $("#resetPaletteBtn").show();
+            updatePaletteSwatches(currentPalette);
+            resetImage();
+        });
+    }
+    paletteColorIndex = index;
+    paletteColorInput.value = colorToHex(currentPalette[index] & 0xffffff);
+    paletteColorInput.click();
+}
+
+function resetPaletteColors() {
+    paletteEdited = false;
+    paletteColorIndex = -1;
+    if (basePalette) dithertron.settings.pal = basePalette;
+    $("#resetPaletteBtn").hide();
+    resetImage();
+}
+
+// Palette editing only makes sense when the exporter carries the palette (or
+// for preview-only systems). Fixed-palette systems would show edited colors in
+// the preview but the native export would still use the hardware colors.
+function canEditPalette() {
+    const sys = dithertron.settings;
+    if (!sys || !sys.reduce) return false;
+    return sys.toNative !== 'exportFrameBuffer';
+}
+
 function updatePaletteSwatches(pal: Uint32Array) {
     var swat = $("#paletteSwatches");
     swat.empty();
-    if (pal && pal.length < 64) {
-        pal.forEach((col, index) => {
+    if (!paletteEdited || !currentPalette)
+        currentPalette = new Uint32Array(pal);
+    const shown = currentPalette;
+    if (shown && shown.length < 64) {
+        const editable = canEditPalette();
+        shown.forEach((col, index) => {
             var rgb = "rgb(" + (col & 0xff) + "," + ((col >> 8) & 0xff) + "," + ((col >> 16) & 0xff) + ")";
             var sq = $('<span style="width:2em">&nbsp;</span>').css("background-color", rgb);
+            if (editable) {
+                sq.css('cursor', 'pointer')
+                    .attr('title', 'Palette entry ' + index + ' (' + colorToHex(col) + ') - click to change');
+                sq.click(() => openPaletteColorPicker(index));
+            }
             swat.append(sq);
         });
     }
@@ -287,7 +361,20 @@ function loadSourceImage(url: string) {
         },
     });
     cropper.replace(url);
+    setAspectLock();
     updateURL();
+}
+
+// Keep the crop box at the target's displayed pixel aspect ratio, unless the
+// user unchecks the lock to crop freely.
+function setAspectLock() {
+    if (!cropper) return;
+    const lock = document.getElementById('lockAspect') as HTMLInputElement;
+    const sys = dithertron.settings;
+    if (lock && lock.checked && sys)
+        cropper.setAspectRatio((sys.width * (sys.scaleX || 1)) / sys.height);
+    else
+        cropper.setAspectRatio(NaN);
 }
 
 // Tile systems share tiles best with ordered dithering (error diffusion makes
@@ -316,6 +403,12 @@ function applyTileDitherSliders(sys: DithertronSettings) {
 
 function setTargetSystem(sys: DithertronSettings) {
     var showNoise = sys.conv != 'DitheringCanvas';
+    // a user-edited palette belongs to the previous system
+    basePalette = new Uint32Array(sys.pal);
+    currentPalette = null;
+    paletteEdited = false;
+    paletteColorIndex = -1;
+    $("#resetPaletteBtn").hide();
     applyTileDitherSliders(sys);
     dithertron.newWorker();
     dithertron.setSettings(sys);
@@ -359,7 +452,17 @@ function downloadNativeFormat() {
 }
 function downloadImageFormat() {
     destCanvas.toBlob((blob) => {
-        saveAs(blob, getFilenamePrefix() + ".png");
+        if (!blob) return;
+        blob.arrayBuffer().then((buf) => {
+            let data: Uint8Array;
+            try {
+                data = pngWithPixelAspect(buf, dithertron.settings.scaleX || 1);
+            } catch (err) {
+                console.error('could not set PNG pixel aspect', err);
+                data = new Uint8Array(buf);
+            }
+            saveAs(new Blob([data.buffer as ArrayBuffer], { type: "image/png" }), getFilenamePrefix() + ".png");
+        });
     }, "image/png");
 }
 function byteArrayToString(data: number[] | Uint8Array): string {
@@ -782,6 +885,7 @@ export function startUI() {
         $("#contrastSlider").on('change', reprocessImage);
         $("#saturationSlider").on('change', reprocessImage);
         $("#graySlider").on('change', resetImage);
+        $("#serpentineCheckbox").on('change', resetImage);
         $("#resetButton").on('click', resetImage);
         $("#diffuseTypeSelect").on('change', resetImage);
         $("#targetFormatSelect").change((e) => {
@@ -797,6 +901,8 @@ export function startUI() {
         $("#downloadImageBtn").click(downloadImageFormat);
         $("#downloadNativeBtn").click(downloadNativeFormat);
         $("#gotoIDE").click(gotoIDE);
+        $("#lockAspect").on('change', setAspectLock);
+        $("#resetPaletteBtn").click(resetPaletteColors);
     });
 
     // print diags (TODO: generate markdown table)

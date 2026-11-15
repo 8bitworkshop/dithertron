@@ -53,6 +53,8 @@ export interface DitherOptions {
     grayBias?: number;
     /** 'perceptual' (default), 'hue', 'dist' or 'max'. */
     errfn?: string;
+    /** Alternate the error diffusion scan direction every row (default false). */
+    serpentine?: boolean;
 }
 
 export interface DitherResult {
@@ -205,7 +207,7 @@ export function dither(
         settings = createSystem(system);
     }
     settings = Object.assign({}, settings);
-    for (const k of ['diffuse', 'ordered', 'noise', 'ditherfn', 'paletteDiversity', 'errfn', 'grayBias'] as const) {
+    for (const k of ['diffuse', 'ordered', 'noise', 'ditherfn', 'paletteDiversity', 'errfn', 'grayBias', 'serpentine'] as const) {
         if (options[k] != null) (settings as any)[k] = options[k];
     }
     const { width, height } = settings;

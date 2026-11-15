@@ -97,3 +97,4 @@ Palette:
     org $10000
     ds 16	; blanks
     incbin "$DATAFILE"
+    ds $2000-.	; pad CHR ROM to 8KB so emulators see a full bank

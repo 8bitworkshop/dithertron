@@ -93,6 +93,9 @@ export interface DithertronSettings {
     // black-and-white image dither with grays instead of picking colorful
     // midtones. Colored source pixels are not affected.
     grayBias?: number;
+    // Alternate the error diffusion scan direction every row (default true).
+    // Set to false to scan every row left-to-right.
+    serpentine?: boolean;
     ditherfn?: DitherKernel;
     block?: BlockBasics & BlockColors & Partial<BlockColorBleed> & Partial<BlockBitOrder>;
     cell?: BlockBasics & BlockBitOrder & Partial<BlockColorBleed> & Partial<BlockBitOrder>;

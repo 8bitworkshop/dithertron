@@ -1290,6 +1290,47 @@ export function exportTMS9918(message: PixelsAvailableMessage, settings: Dithert
     });
 }
 
+// MSX2 Screen 2 (V9938): the same pattern/color table layout as TMS9918 mode 2,
+// but with 16 programmable RGB333 colors. Append the palette as 32 bytes, two
+// per entry: [0 RRR 0 BBB] [0 000 GGG] (see the V9938 data book).
+export function exportMSX2(message: PixelsAvailableMessage, settings: DithertronSettings): Uint8Array {
+    let content: BlockParamDitherCanvasContent = message.content;
+
+    let imageData = exportCombinedImageAndColorCellBuffer({
+        message: message,
+        content: content,
+        cellMapper: getVicCellMapper(
+            content,
+            {
+                colorsBitPattern: [0x00, 0x01]
+            }
+        ),
+        colorParamMapper: getTMS9918ColorMapper(
+            content,
+            {
+                paramToBitPattern(param: number, info: ParamBitInfo): number {
+                    // Screen 2 has no transparent index, so palette entry 0 is
+                    // used as-is (unlike the TMS9918 exporter).
+                    let colors = extractColorsFromParamContent(param, 2, content);
+                    return (colors[0] & 0xf) | ((colors[1] & 0xf) << 4);
+                }
+            }
+        ),
+    });
+
+    let paletteData = new Uint8Array(32);
+    for (let i = 0; i < 16; i++) {
+        let color = message.pal[i] ?? 0;
+        let r = Math.round(((color >> 0) & 0xff) * 7 / 255);
+        let g = Math.round(((color >> 8) & 0xff) * 7 / 255);
+        let b = Math.round(((color >> 16) & 0xff) * 7 / 255);
+        paletteData[i * 2 + 0] = (r << 4) | b;
+        paletteData[i * 2 + 1] = g;
+    }
+
+    return concatArrays([imageData, paletteData]);
+}
+
 type PlaneToMemoryLocationFunc = (
     plane: number,
     planes: number,
@@ -2092,6 +2133,11 @@ function encodeAmiga(img: PixelsAvailableMessage, colors: number, planes: number
 // 32 colors, 5 bitplanes.
 export function exportAmiga(img: PixelsAvailableMessage, settings: DithertronSettings): Uint8Array {
     return encodeAmiga(img, 32, 5, (index) => index);
+}
+
+// Workbench 1.3/2.0: 4 colors, 2 bitplanes.
+export function exportAmiga4(img: PixelsAvailableMessage, settings: DithertronSettings): Uint8Array {
+    return encodeAmiga(img, 4, 2, (index) => index);
 }
 
 // HAM6: 16 base colors and 6 bitplanes. Plane bits 4-5 are the control code
